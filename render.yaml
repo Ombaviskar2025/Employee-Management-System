@@ -1,0 +1,31 @@
+# ─────────────────────────────────────────────────────────────
+# render.yaml
+# Infrastructure-as-code for Render.com deployment.
+# Deploys the Express backend as a Web Service.
+# ─────────────────────────────────────────────────────────────
+
+services:
+  - type: web
+    name: ems-backend
+    env: node
+    region: oregon          # Free tier region
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 5000
+
+      - key: JWT_EXPIRES_IN
+        value: 7d
+
+      # ── Set these manually in Render Dashboard ──────────────
+      # MONGO_URI     → your MongoDB Atlas connection string
+      # JWT_SECRET    → your secret key
+      # FRONTEND_URL  → your Vercel frontend URL
