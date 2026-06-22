@@ -4,6 +4,7 @@
  * Defines all routes and wraps protected areas with ProtectedRoute.
  */
 
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
@@ -20,6 +21,20 @@ import SettingsPage from "./pages/SettingsPage";
 import HelpCenterPage from "./pages/HelpCenterPage";
 
 function App() {
+  // Initialize dark mode theme globally on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("ems_dark_mode");
+    const isDark =
+      stored !== null
+        ? stored === "true"
+        : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (isDark) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }, []);
+
   return (
     <>
       {/* Global Toast Notifications */}

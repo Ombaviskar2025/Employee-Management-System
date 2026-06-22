@@ -6,8 +6,73 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap");
 
-/* ── Color Tokens (Midnight Indigo Palette) ─────────────────── */
+/* ── Color Tokens (Light/Dark Theme Variables) ──────────────── */
 :root {
+  /* Primary */
+  --clr-primary: #494bd6;
+  --clr-primary-dark: #3739a8;
+  --clr-primary-cta: #494bd6;
+  --clr-primary-glow: rgba(73, 75, 214, 0.1);
+
+  /* Surfaces */
+  --bg-body: #f5f7fa;
+  --bg-surface: #ffffff;
+  --bg-surface-container: #ffffff;
+  --bg-surface-container-low: #f8fafc;
+  --bg-surface-container-high: #edf2f7;
+  --bg-surface-container-highest: #e2e8f0;
+  --bg-surface-container-lowest: #ffffff;
+  --bg-surface-variant: #edf2f7;
+  --bg-input: #ffffff;
+  --bg-modal-overlay: rgba(15, 23, 42, 0.45);
+  --bg-sidebar: #ffffff;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+
+  /* Borders */
+  --border: rgba(148, 163, 184, 0.25);
+  --border-focus: #494bd6;
+
+  /* Status */
+  --clr-success: #16a34a;
+  --clr-success-bg: rgba(22, 163, 74, 0.1);
+  --clr-warning: #d97706;
+  --clr-warning-bg: rgba(217, 119, 6, 0.1);
+  --clr-danger: #dc2626;
+  --clr-danger-bg: rgba(220, 38, 38, 0.1);
+  --clr-info: #2563eb;
+  --clr-error: #dc2626;
+
+  /* Secondary */
+  --clr-secondary: #475569;
+  --clr-tertiary: #64748b;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 24px rgba(15, 23, 42, 0.12);
+  --shadow-glow: 0 0 20px rgba(73, 75, 214, 0.08);
+  --shadow-primary-glow: 0 4px 12px rgba(73, 75, 214, 0.2);
+
+  /* Layout */
+  --sidebar-width: 256px;
+  --navbar-height: 64px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
   /* Primary */
   --clr-primary: #c0c1ff;
   --clr-primary-dark: #8083ff;
@@ -57,19 +122,6 @@
   --shadow-lg: 0 10px 40px rgba(0,0,0,0.6);
   --shadow-glow: 0 0 30px rgba(128, 131, 255, 0.2);
   --shadow-primary-glow: 0 4px 14px rgba(128, 131, 255, 0.3);
-
-  /* Layout */
-  --sidebar-width: 256px;
-  --navbar-height: 64px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-
-  /* Transitions */
-  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Reset & Base ─────────────────────────────────────────── */
