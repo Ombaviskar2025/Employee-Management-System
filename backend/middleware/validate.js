@@ -86,6 +86,10 @@ const validateEmployee = [
     .notEmpty().withMessage("Joining date is required")
     .isISO8601().withMessage("Please enter a valid date (YYYY-MM-DD)"),
 
+  body("password")
+    .optional()
+    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
+
   handleValidation,
 ];
 

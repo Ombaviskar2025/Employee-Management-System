@@ -12,13 +12,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import EmployeesPage from "./pages/EmployeesPage";
 import PayrollPage from "./pages/PayrollPage";
 import PerformancePage from "./pages/PerformancePage";
 import SettingsPage from "./pages/SettingsPage";
 import HelpCenterPage from "./pages/HelpCenterPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   // Initialize dark mode theme globally on mount
@@ -61,7 +61,6 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
 
         {/* Protected Routes — wrapped in DashboardLayout */}
         <Route element={<ProtectedRoute />}>
@@ -72,6 +71,7 @@ function App() {
             <Route path="/performance" element={<PerformancePage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/help" element={<HelpCenterPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 

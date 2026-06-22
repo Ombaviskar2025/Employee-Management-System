@@ -23,6 +23,18 @@ const authService = {
     const response = await api.get("/auth/profile");
     return response.data;
   },
+
+  /** Update user profile (requires auth) */
+  updateProfile: async (profileData) => {
+    const response = await api.put("/auth/profile", profileData);
+    return response.data;
+  },
+
+  /** Update password (requires auth) */
+  updatePassword: async (passwordData) => {
+    const response = await api.put("/auth/profile/password", passwordData);
+    return response.data;
+  },
 };
 
 export default authService;

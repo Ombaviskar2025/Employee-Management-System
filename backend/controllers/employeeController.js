@@ -14,6 +14,7 @@
  */
 
 const Employee = require("../models/Employee");
+const User = require("../models/User");
 
 // ── @desc    Get all employees (with search, pagination, sort, filter)
 // ── @route   GET /api/employees
@@ -121,12 +122,13 @@ const getEmployee = async (req, res, next) => {
 // ── @access  Private
 const createEmployee = async (req, res, next) => {
   try {
-    const { fullName, email, mobileNumber, department, designation, joiningDate, salary } =
+    const { fullName, email, mobileNumber, department, designation, joiningDate, salary, password, profilePhoto, status } =
       req.body;
 
-    // Check for duplicate email
-    const existing = await Employee.findOne({ email });
-    if (existing) {
+    // Check for duplicate email in both collections
+    const existingEmp = await Employee.findOne({ email });
+    const existingUser = await User.findOne({ email });
+    if (existingEmp || existingUser) {
       return res.status(400).json({
         success: false,
         message: "An employee with this email already exists",
@@ -141,6 +143,16 @@ const createEmployee = async (req, res, next) => {
       designation,
       joiningDate,
       salary: salary || 0,
+      password: password || "employee123",
+      profilePhoto: profilePhoto || "",
+      status: status || "active",
+    });
+
+    await User.create({
+      name: fullName,
+      email,
+      password: password || "employee123",
+      role: "employee",
     });
 
     res.status(201).json({
@@ -167,10 +179,13 @@ const updateEmployee = async (req, res, next) => {
       });
     }
 
+    const oldEmail = employee.email;
+
     // If email is being changed, check for duplicates
-    if (req.body.email && req.body.email !== employee.email) {
-      const duplicate = await Employee.findOne({ email: req.body.email });
-      if (duplicate) {
+    if (req.body.email && req.body.email !== oldEmail) {
+      const duplicateEmp = await Employee.findOne({ email: req.body.email });
+      const duplicateUser = await User.findOne({ email: req.body.email });
+      if (duplicateEmp || duplicateUser) {
         return res.status(400).json({
           success: false,
           message: "An employee with this email already exists",
@@ -186,6 +201,15 @@ const updateEmployee = async (req, res, next) => {
         runValidators: true, // Run schema validators
       }
     );
+
+    // Sync changes to User collection
+    const user = await User.findOne({ email: oldEmail });
+    if (user) {
+      if (req.body.fullName) user.name = req.body.fullName;
+      if (req.body.email) user.email = req.body.email;
+      if (req.body.password) user.password = req.body.password;
+      await user.save();
+    }
 
     res.status(200).json({
       success: true,
@@ -211,7 +235,9 @@ const deleteEmployee = async (req, res, next) => {
       });
     }
 
+    const oldEmail = employee.email;
     await employee.deleteOne();
+    await User.deleteOne({ email: oldEmail });
 
     res.status(200).json({
       success: true,

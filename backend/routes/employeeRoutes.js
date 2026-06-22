@@ -16,11 +16,12 @@ const {
   getStats,
 } = require("../controllers/employeeController");
 
-const { protect } = require("../middleware/auth");
+const { protect, authorize } = require("../middleware/auth");
 const { validateEmployee } = require("../middleware/validate");
 
-// All routes require authentication
+// All routes require authentication and Master HR authorization
 router.use(protect);
+router.use(authorize("master_hr"));
 
 // Dashboard stats — place before :id param route to avoid conflict
 router.get("/stats", getStats);

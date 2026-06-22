@@ -5,6 +5,7 @@
  */
 
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const DEPARTMENTS = [
   "Engineering",
@@ -77,11 +78,38 @@ const employeeSchema = new mongoose.Schema(
       min: [0, "Salary cannot be negative"],
       default: 0,
     },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters"],
+    },
+    profilePhoto: {
+      type: String,
+      default: "",
+    },
+    role: {
+      type: String,
+      default: "employee",
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt
   }
 );
+
+// ── Pre-save Hook: Hash password before saving ────────────────────────────────
+employeeSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+// ── Instance Method: Compare plain text vs hashed password ───────────────────
+employeeSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 // ── Text Index for full-text search ──────────────────────────────────────────
 employeeSchema.index({

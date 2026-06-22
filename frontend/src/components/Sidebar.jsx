@@ -14,16 +14,18 @@ import {
   FiPlus,
   FiHelpCircle,
   FiLogOut,
-  FiX
+  FiX,
+  FiUser
 } from "react-icons/fi";
 import useAuth from "../hooks/useAuth";
 
 const NAV_ITEMS = [
-  { to: "/dashboard", icon: FiHome, label: "Dashboard" },
-  { to: "/employees", icon: FiUsers, label: "Employees" },
-  { to: "/payroll", icon: FiCreditCard, label: "Payroll" },
-  { to: "/performance", icon: FiTrendingUp, label: "Performance" },
-  { to: "/settings", icon: FiSettings, label: "Settings" },
+  { to: "/dashboard", icon: FiHome, label: "Dashboard", adminOnly: true },
+  { to: "/employees", icon: FiUsers, label: "Employees", adminOnly: true },
+  { to: "/payroll", icon: FiCreditCard, label: "Payroll", adminOnly: true },
+  { to: "/performance", icon: FiTrendingUp, label: "Performance", adminOnly: true },
+  { to: "/settings", icon: FiSettings, label: "Settings", adminOnly: true },
+  { to: "/profile", icon: FiUser, label: "My Profile" },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -34,6 +36,15 @@ const Sidebar = ({ isOpen, onClose }) => {
     onClose();
     navigate("/employees?add=true");
   };
+
+  const isMasterHr = user?.role === "master_hr";
+
+  const filteredNavItems = NAV_ITEMS.filter((item) => {
+    if (item.adminOnly) {
+      return isMasterHr;
+    }
+    return true;
+  });
 
   return (
     <>
@@ -68,7 +79,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         {/* Nav Links */}
         <nav className="sidebar__nav" aria-label="Main navigation">
-          {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+          {filteredNavItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
@@ -84,17 +95,19 @@ const Sidebar = ({ isOpen, onClose }) => {
           ))}
 
           {/* Divider */}
-          <div className="sidebar__divider" />
+          {isMasterHr && <div className="sidebar__divider" />}
 
           {/* Add Employee CTA Button */}
-          <button
-            className="sidebar__action-btn"
-            onClick={handleAddEmployeeClick}
-            id="sidebar-add-employee-btn"
-          >
-            <FiPlus size={17} />
-            <span>Add Employee</span>
-          </button>
+          {isMasterHr && (
+            <button
+              className="sidebar__action-btn"
+              onClick={handleAddEmployeeClick}
+              id="sidebar-add-employee-btn"
+            >
+              <FiPlus size={17} />
+              <span>Add Employee</span>
+            </button>
+          )}
         </nav>
 
         {/* User info + links + logout */}

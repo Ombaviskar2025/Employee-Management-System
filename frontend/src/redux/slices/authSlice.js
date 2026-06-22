@@ -61,6 +61,32 @@ export const fetchProfile = createAsyncThunk(
   }
 );
 
+export const updateUserProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (profileData, { rejectWithValue }) => {
+    try {
+      const data = await authService.updateProfile(profileData);
+      return data.data;
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to update profile.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const updateUserPassword = createAsyncThunk(
+  "auth/updatePassword",
+  async (passwordData, { rejectWithValue }) => {
+    try {
+      const data = await authService.updatePassword(passwordData);
+      return data;
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to update password.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const authSlice = createSlice({
@@ -133,6 +159,25 @@ const authSlice = createSlice({
       .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(updateUserProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = { ...state.user, ...action.payload };
+        // Sync local storage
+        const stored = localStorage.getItem("ems_user");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          localStorage.setItem("ems_user", JSON.stringify({ ...parsed, ...action.payload }));
+        }
+        toast.success("Profile updated successfully! 🎉");
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
       });
   },
 });

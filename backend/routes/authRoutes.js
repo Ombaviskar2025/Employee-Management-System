@@ -6,7 +6,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { register, login, getProfile } = require("../controllers/authController");
+const { register, login, getProfile, updateProfile, updatePassword } = require("../controllers/authController");
 const { protect } = require("../middleware/auth");
 const { validateRegister, validateLogin } = require("../middleware/validate");
 
@@ -16,5 +16,7 @@ router.post("/login", validateLogin, login);
 
 // Protected routes
 router.get("/profile", protect, getProfile);
+router.put("/profile", protect, updateProfile);
+router.put("/profile/password", protect, updatePassword);
 
 module.exports = router;

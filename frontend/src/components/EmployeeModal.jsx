@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { FiX, FiUser, FiMail, FiPhone, FiBriefcase, FiCalendar, FiDollarSign } from "react-icons/fi";
+import { FiX, FiUser, FiMail, FiPhone, FiBriefcase, FiCalendar, FiDollarSign, FiLock } from "react-icons/fi";
 import { validateEmployeeForm } from "../utils/validators";
 
 const DEPARTMENTS = [
@@ -18,11 +18,12 @@ const EMPTY_FORM = {
   fullName: "",
   email: "",
   mobileNumber: "",
-  department: "",
+  department: "Engineering",
   designation: "",
   joiningDate: "",
   salary: "",
   status: "active",
+  password: "",
 };
 
 const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
@@ -61,7 +62,7 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const validationErrors = validateEmployeeForm(form);
+    const validationErrors = validateEmployeeForm(form, !isEdit);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -254,6 +255,27 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
                   <option value="on-leave">On Leave</option>
                 </select>
               </div>
+
+              {/* Password (Only on Create) */}
+              {!isEdit && (
+                <div className="form-group">
+                  <label className="form-label" htmlFor="emp-password">
+                    <FiLock size={14} /> Password *
+                  </label>
+                  <input
+                    id="emp-password"
+                    name="password"
+                    type="password"
+                    className={inputClass("password")}
+                    placeholder="Enter login password"
+                    value={form.password}
+                    onChange={handleChange}
+                  />
+                  {errors.password && (
+                    <span className="form-error">{errors.password}</span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

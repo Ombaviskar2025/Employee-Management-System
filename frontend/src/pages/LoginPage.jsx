@@ -150,13 +150,6 @@ const LoginPage = () => {
             )}
           </button>
         </form>
-
-        <p className="auth-switch">
-          Don&apos;t have an account?{" "}
-          <Link to="/register" className="auth-link">
-            Create account
-          </Link>
-        </p>
       </div>
     </div>
   );

@@ -5,14 +5,29 @@
  */
 
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import useDarkMode from "../hooks/useDarkMode";
+import useAuth from "../hooks/useAuth";
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isDark, toggle } = useDarkMode();
+  const { user } = useAuth();
+  const location = useLocation();
+
+  // If user is employee, block them from super-admin pages
+  const employeeRestrictedRoutes = [
+    "/dashboard",
+    "/employees",
+    "/payroll",
+    "/performance",
+    "/settings"
+  ];
+  if (user?.role === "employee" && employeeRestrictedRoutes.includes(location.pathname)) {
+    return <Navigate to="/profile" replace />;
+  }
 
   return (
     <div className="layout">

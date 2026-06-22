@@ -38,7 +38,7 @@ export const validateMinLength = (value, min, fieldName = "This field") => {
  * Validate the entire employee form.
  * Returns an errors object — empty values = valid.
  */
-export const validateEmployeeForm = (data) => {
+export const validateEmployeeForm = (data, isCreate = false) => {
   const errors = {};
 
   const nameError = validateRequired(data.fullName, "Full name");
@@ -59,6 +59,11 @@ export const validateEmployeeForm = (data) => {
 
   const dateError = validateRequired(data.joiningDate, "Joining date");
   if (dateError) errors.joiningDate = dateError;
+
+  if (isCreate) {
+    const passError = validatePassword(data.password);
+    if (passError) errors.password = passError;
+  }
 
   return errors;
 };
