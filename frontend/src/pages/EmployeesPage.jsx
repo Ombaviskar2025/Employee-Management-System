@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import { FiPlus, FiDownload } from "react-icons/fi";
 
 import {
@@ -48,6 +49,17 @@ const EmployeesPage = () => {
   const [editEmployee, setEditEmployee] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Open modal if add=true is in URL query parameter
+  useEffect(() => {
+    if (searchParams.get("add") === "true") {
+      setEditEmployee(null);
+      setShowAddEdit(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Fetch employees whenever filters/page change
   const loadEmployees = useCallback(() => {

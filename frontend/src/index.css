@@ -1586,3 +1586,173 @@ select.form-input option {
   font-size: 14px !important;
   font-family: "Inter", sans-serif !important;
 }
+
+/* ── Sidebar Custom Extensions ───────────────────────────── */
+.sidebar__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 8px;
+  padding: 12px;
+  background: var(--clr-primary-cta);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(73, 75, 214, 0.25);
+  text-decoration: none;
+}
+
+.sidebar__action-btn:hover {
+  background: var(--clr-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(128, 131, 255, 0.35);
+  color: white;
+}
+
+.sidebar__divider {
+  height: 1px;
+  background: rgba(70, 69, 84, 0.15);
+  margin: 12px 8px;
+}
+
+/* ── FAQ Accordion ───────────────────────────────────────── */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  border: 1px solid rgba(70, 69, 84, 0.2);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-container-low);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.faq-item--open {
+  border-color: rgba(192, 193, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.faq-question:hover {
+  background: rgba(192, 193, 255, 0.04);
+}
+
+.faq-answer {
+  padding: 0 20px 18px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── Star Ratings ────────────────────────────────────────── */
+.star-rating {
+  display: flex;
+  gap: 4px;
+}
+
+.star {
+  font-size: 18px;
+  color: #ffb800;
+}
+
+.star--empty {
+  color: rgba(70, 69, 84, 0.5);
+}
+
+.star-input {
+  display: flex;
+  gap: 8px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.star-input__star {
+  color: rgba(70, 69, 84, 0.5);
+  transition: var(--transition);
+}
+
+.star-input__star:hover,
+.star-input__star--active {
+  color: #ffb800;
+  transform: scale(1.1);
+}
+
+/* ── Settings Form ───────────────────────────────────────── */
+.settings-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .settings-section {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-nav__btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.settings-nav__btn:hover {
+  background: var(--bg-surface-container-high);
+  color: var(--text-primary);
+}
+
+.settings-nav__btn--active {
+  background: rgba(192, 193, 255, 0.12);
+  color: var(--clr-primary);
+  font-weight: 600;
+}
+
+/* ── Payroll Statuses ────────────────────────────────────── */
+.badge--paid {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #10b981 !important;
+}
+
+.badge--pending {
+  background: rgba(245, 158, 11, 0.12) !important;
+  color: #f59e0b !important;
+}
+

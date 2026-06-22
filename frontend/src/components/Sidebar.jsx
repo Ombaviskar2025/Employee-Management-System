@@ -1,20 +1,39 @@
 /**
  * Sidebar.jsx
- * Left navigation sidebar with branding, nav links, and user info.
+ * Left navigation sidebar with branding, nav links, actions, and user info.
  * HR Connect Midnight Indigo design.
  */
 
-import { NavLink } from "react-router-dom";
-import { FiHome, FiUsers, FiLogOut, FiX } from "react-icons/fi";
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  FiHome,
+  FiUsers,
+  FiCreditCard,
+  FiTrendingUp,
+  FiSettings,
+  FiPlus,
+  FiHelpCircle,
+  FiLogOut,
+  FiX
+} from "react-icons/fi";
 import useAuth from "../hooks/useAuth";
 
 const NAV_ITEMS = [
   { to: "/dashboard", icon: FiHome, label: "Dashboard" },
   { to: "/employees", icon: FiUsers, label: "Employees" },
+  { to: "/payroll", icon: FiCreditCard, label: "Payroll" },
+  { to: "/performance", icon: FiTrendingUp, label: "Performance" },
+  { to: "/settings", icon: FiSettings, label: "Settings" },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAddEmployeeClick = () => {
+    onClose();
+    navigate("/employees?add=true");
+  };
 
   return (
     <>
@@ -35,8 +54,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             </svg>
           </div>
           <div className="sidebar__brand-text">
-            <span className="sidebar__app-name">EMS Pro</span>
-            <span className="sidebar__app-sub">HR Dashboard</span>
+            <span className="sidebar__app-name">HR Connect</span>
+            <span className="sidebar__app-sub">ENTERPRISE SUITE</span>
           </div>
           <button
             className="sidebar__close-btn"
@@ -63,9 +82,22 @@ const Sidebar = ({ isOpen, onClose }) => {
               <span className="sidebar__link-indicator" />
             </NavLink>
           ))}
+
+          {/* Divider */}
+          <div className="sidebar__divider" />
+
+          {/* Add Employee CTA Button */}
+          <button
+            className="sidebar__action-btn"
+            onClick={handleAddEmployeeClick}
+            id="sidebar-add-employee-btn"
+          >
+            <FiPlus size={17} />
+            <span>Add Employee</span>
+          </button>
         </nav>
 
-        {/* User info + logout */}
+        {/* User info + links + logout */}
         <div className="sidebar__footer">
           <div className="sidebar__user">
             <div className="sidebar__user-avatar">
@@ -76,6 +108,20 @@ const Sidebar = ({ isOpen, onClose }) => {
               <span className="sidebar__user-email">{user?.email || ""}</span>
             </div>
           </div>
+          
+          <NavLink
+            to="/help"
+            className={({ isActive }) =>
+              `sidebar__link ${isActive ? "sidebar__link--active" : ""}`
+            }
+            onClick={onClose}
+            style={{ marginTop: "4px" }}
+          >
+            <FiHelpCircle size={17} />
+            <span>Help Center</span>
+            <span className="sidebar__link-indicator" />
+          </NavLink>
+
           <button
             className="sidebar__logout"
             onClick={logout}

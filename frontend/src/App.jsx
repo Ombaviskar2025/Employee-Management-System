@@ -14,6 +14,10 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import EmployeesPage from "./pages/EmployeesPage";
+import PayrollPage from "./pages/PayrollPage";
+import PerformancePage from "./pages/PerformancePage";
+import SettingsPage from "./pages/SettingsPage";
+import HelpCenterPage from "./pages/HelpCenterPage";
 
 function App() {
   return (
@@ -49,6 +53,10 @@ function App() {
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/employees" element={<EmployeesPage />} />
+            <Route path="/payroll" element={<PayrollPage />} />
+            <Route path="/performance" element={<PerformancePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/help" element={<HelpCenterPage />} />
           </Route>
         </Route>
 
