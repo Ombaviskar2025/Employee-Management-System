@@ -36,31 +36,16 @@ const PerformancePage = () => {
   useEffect(() => {
     const savedReviews = localStorage.getItem("ems_performance_reviews");
     if (savedReviews) {
-      setReviews(JSON.parse(savedReviews));
+      const parsed = JSON.parse(savedReviews);
+      // Filter out any leftover mock reviews
+      const filtered = parsed.filter(rev => rev.id !== "mock-1" && rev.id !== "mock-2");
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem("ems_performance_reviews", JSON.stringify(filtered));
+      }
+      setReviews(filtered);
     } else {
-      // Set some mock initial reviews
-      const initialReviews = [
-        {
-          id: "mock-1",
-          employeeName: "Sarah Connor",
-          employeeId: "1",
-          rating: 5,
-          reviewer: "John Connor",
-          feedback: "Sarah shows exceptional dedication to project deadlines. Outstanding coding standards and teamwork.",
-          date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        },
-        {
-          id: "mock-2",
-          employeeName: "Marcus Wright",
-          employeeId: "2",
-          rating: 4,
-          reviewer: "John Connor",
-          feedback: "Marcus has adapted very quickly to our development cycle. Strong problem solving capabilities.",
-          date: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-        },
-      ];
-      setReviews(initialReviews);
-      localStorage.setItem("ems_performance_reviews", JSON.stringify(initialReviews));
+      setReviews([]);
+      localStorage.setItem("ems_performance_reviews", JSON.stringify([]));
     }
   }, []);
 
