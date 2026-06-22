@@ -14,6 +14,13 @@ const morgan = require("morgan");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
+const attendanceRoutes = require("./routes/attendanceRoutes");
+const leaveRoutes = require("./routes/leaveRoutes");
+const announcementRoutes = require("./routes/announcementRoutes");
+const recruitmentRoutes = require("./routes/recruitmentRoutes");
+const documentRoutes = require("./routes/documentRoutes");
+const auditLogRoutes = require("./routes/auditLogRoutes");
+const payrollRoutes = require("./routes/payrollRoutes");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
 
 // ── Connect to MongoDB ────────────────────────────────────────────────────────
@@ -74,6 +81,13 @@ app.get("/api/health", (req, res) => {
 // ── API Routes ────────────────────────────────────────────────────────────────
 app.use("/api/auth", authRoutes);
 app.use("/api/employees", employeeRoutes);
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/leaves", leaveRoutes);
+app.use("/api/announcements", announcementRoutes);
+app.use("/api/recruitment", recruitmentRoutes);
+app.use("/api/documents", documentRoutes);
+app.use("/api/audit-logs", auditLogRoutes);
+app.use("/api/payroll", payrollRoutes);
 
 // ── 404 Handler ───────────────────────────────────────────────────────────────
 app.use(notFound);

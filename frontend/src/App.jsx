@@ -11,6 +11,17 @@ import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 
+import RegisterPage from "./pages/RegisterPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import RegistrationsPage from "./pages/RegistrationsPage";
+import AttendancePage from "./pages/AttendancePage";
+import LeavePage from "./pages/LeavePage";
+import AnnouncementPage from "./pages/AnnouncementPage";
+import RecruitmentPage from "./pages/RecruitmentPage";
+import DocumentPage from "./pages/DocumentPage";
+import AuditLogPage from "./pages/AuditLogPage";
+
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import EmployeesPage from "./pages/EmployeesPage";
@@ -61,17 +72,27 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
         {/* Protected Routes — wrapped in DashboardLayout */}
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/employees" element={<EmployeesPage />} />
+            <Route path="/registrations" element={<RegistrationsPage />} />
+            <Route path="/attendance" element={<AttendancePage />} />
+            <Route path="/leaves" element={<LeavePage />} />
             <Route path="/payroll" element={<PayrollPage />} />
             <Route path="/performance" element={<PerformancePage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/help" element={<HelpCenterPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/announcements" element={<AnnouncementPage />} />
+            <Route path="/recruitment" element={<RecruitmentPage />} />
+            <Route path="/documents" element={<DocumentPage />} />
+            <Route path="/audit-logs" element={<AuditLogPage />} />
           </Route>
         </Route>
 

@@ -15,17 +15,39 @@ import {
   FiHelpCircle,
   FiLogOut,
   FiX,
-  FiUser
+  FiUser,
+  FiCheckSquare,
+  FiClock,
+  FiCalendar,
+  FiBell,
+  FiBriefcase,
+  FiFileText,
+  FiShield
 } from "react-icons/fi";
 import useAuth from "../hooks/useAuth";
 
-const NAV_ITEMS = [
-  { to: "/dashboard", icon: FiHome, label: "Dashboard", adminOnly: true },
-  { to: "/employees", icon: FiUsers, label: "Employees", adminOnly: true },
-  { to: "/payroll", icon: FiCreditCard, label: "Payroll", adminOnly: true },
-  { to: "/performance", icon: FiTrendingUp, label: "Performance", adminOnly: true },
-  { to: "/settings", icon: FiSettings, label: "Settings", adminOnly: true },
+const HR_NAV_ITEMS = [
+  { to: "/dashboard", icon: FiHome, label: "Dashboard" },
+  { to: "/employees", icon: FiUsers, label: "Employees" },
+  { to: "/registrations", icon: FiCheckSquare, label: "Registrations" },
+  { to: "/attendance", icon: FiClock, label: "Attendance" },
+  { to: "/leaves", icon: FiCalendar, label: "Leaves" },
+  { to: "/payroll", icon: FiCreditCard, label: "Payroll" },
+  { to: "/announcements", icon: FiBell, label: "Announcements" },
+  { to: "/recruitment", icon: FiBriefcase, label: "Recruitment" },
+  { to: "/documents", icon: FiFileText, label: "Documents" },
+  { to: "/audit-logs", icon: FiShield, label: "Audit Logs" },
+  { to: "/settings", icon: FiSettings, label: "Settings" },
   { to: "/profile", icon: FiUser, label: "My Profile" },
+];
+
+const EMP_NAV_ITEMS = [
+  { to: "/profile", icon: FiUser, label: "My Profile" },
+  { to: "/attendance", icon: FiClock, label: "Attendance" },
+  { to: "/leaves", icon: FiCalendar, label: "Leave Requests" },
+  { to: "/payroll", icon: FiCreditCard, label: "Salary & Payslips" },
+  { to: "/announcements", icon: FiBell, label: "Announcements" },
+  { to: "/documents", icon: FiFileText, label: "Documents" },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -38,13 +60,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   };
 
   const isMasterHr = user?.role === "master_hr";
-
-  const filteredNavItems = NAV_ITEMS.filter((item) => {
-    if (item.adminOnly) {
-      return isMasterHr;
-    }
-    return true;
-  });
+  const filteredNavItems = isMasterHr ? HR_NAV_ITEMS : EMP_NAV_ITEMS;
 
   return (
     <>

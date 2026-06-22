@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { FiPlus, FiDownload } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 import {
   fetchEmployees,
@@ -158,8 +159,35 @@ const EmployeesPage = () => {
         <div className="page-header__actions">
           <button
             className="btn btn--ghost btn--sm"
-            title="Export (coming soon)"
-            disabled
+            title="Export to CSV (Excel compatible)"
+            onClick={() => {
+              if (employees.length === 0) {
+                toast.error("No employee data to export");
+                return;
+              }
+              const headers = ["Full Name", "Email", "Mobile Number", "Department", "Designation", "Joining Date", "Status"];
+              const rows = employees.map(emp => [
+                `"${emp.fullName}"`,
+                emp.email,
+                emp.mobileNumber,
+                `"${emp.department}"`,
+                `"${emp.designation}"`,
+                new Date(emp.joiningDate).toLocaleDateString(),
+                emp.status
+              ]);
+              
+              let csvContent = "data:text/csv;charset=utf-8," 
+                + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+                
+              const encodedUri = encodeURI(csvContent);
+              const link = document.createElement("a");
+              link.setAttribute("href", encodedUri);
+              link.setAttribute("download", `employees_report_${new Date().toISOString().split("T")[0]}.csv`);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              toast.success("Employees report exported! 📊");
+            }}
           >
             <FiDownload size={15} />
             Export

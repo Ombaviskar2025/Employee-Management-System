@@ -22,10 +22,10 @@ const handleValidation = (req, res, next) => {
 // ── Auth Validators ───────────────────────────────────────────────────────────
 
 const validateRegister = [
-  body("name")
+  body("fullName")
     .trim()
-    .notEmpty().withMessage("Name is required")
-    .isLength({ min: 2, max: 50 }).withMessage("Name must be 2-50 characters"),
+    .notEmpty().withMessage("Full name is required")
+    .isLength({ min: 2, max: 100 }).withMessage("Name must be 2-100 characters"),
 
   body("email")
     .trim()
@@ -33,10 +33,26 @@ const validateRegister = [
     .isEmail().withMessage("Please enter a valid email")
     .normalizeEmail(),
 
+  body("mobileNumber")
+    .trim()
+    .notEmpty().withMessage("Mobile number is required")
+    .matches(/^[0-9]{10}$/).withMessage("Mobile number must be exactly 10 digits"),
+
+  body("department")
+    .trim()
+    .notEmpty().withMessage("Department is required"),
+
+  body("designation")
+    .trim()
+    .notEmpty().withMessage("Designation is required"),
+
+  body("joiningDate")
+    .notEmpty().withMessage("Joining date is required")
+    .isISO8601().withMessage("Please enter a valid date (YYYY-MM-DD)"),
+
   body("password")
     .notEmpty().withMessage("Password is required")
-    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
-    .matches(/\d/).withMessage("Password must contain at least one number"),
+    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
 
   handleValidation,
 ];

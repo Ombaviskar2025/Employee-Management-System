@@ -1,21 +1,62 @@
 /**
  * authController.js
- * Handles user login, profile retrieval, profile update, and password update.
- * Public registration is blocked.
+ * Handles user login, registration, profile retrieval, profile update, and password update.
  */
 
+const crypto = require("crypto");
 const User = require("../models/User");
 const Employee = require("../models/Employee");
 const generateToken = require("../utils/generateToken");
 
-// ── @desc    Register a new user (BLOCKED)
+// ── @desc    Register a new employee
 // ── @route   POST /api/auth/register
 // ── @access  Public
 const register = async (req, res, next) => {
-  return res.status(403).json({
-    success: false,
-    message: "Public registration is disabled. Accounts can only be created by Master HR.",
-  });
+  try {
+    const { fullName, email, mobileNumber, department, designation, joiningDate, password } = req.body;
+
+    // Check duplicate email
+    const existingEmp = await Employee.findOne({ email });
+    const existingUser = await User.findOne({ email });
+    if (existingEmp || existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "An account with this email already exists",
+      });
+    }
+
+    // Create Employee in 'pending' status
+    const employee = await Employee.create({
+      fullName,
+      email,
+      mobileNumber,
+      department,
+      designation,
+      joiningDate,
+      password,
+      status: "pending",
+    });
+
+    // Create User in 'employee' role
+    await User.create({
+      name: fullName,
+      email,
+      password,
+      role: "employee",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Registration successful! Your account is pending approval from Master HR.",
+      data: {
+        fullName: employee.fullName,
+        email: employee.email,
+        status: employee.status,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // ── @desc    Authenticate user & get token
@@ -37,7 +78,25 @@ const login = async (req, res, next) => {
     // Verify status if employee
     if (user.role === "employee") {
       const emp = await Employee.findOne({ email: user.email });
-      if (emp && emp.status === "inactive") {
+      if (!emp) {
+        return res.status(404).json({
+          success: false,
+          message: "Employee profile not found",
+        });
+      }
+      if (emp.status === "pending") {
+        return res.status(403).json({
+          success: false,
+          message: "Your account is pending approval from Master HR.",
+        });
+      }
+      if (emp.status === "rejected") {
+        return res.status(403).json({
+          success: false,
+          message: "Your registration has been rejected. Please contact HR.",
+        });
+      }
+      if (emp.status === "inactive") {
         return res.status(403).json({
           success: false,
           message: "Your account is deactivated. Please contact HR.",
@@ -217,4 +276,90 @@ const updatePassword = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, getProfile, updateProfile, updatePassword };
+// ── @desc    Forgot Password
+// ── @route   POST /api/auth/forgot-password
+// ── @access  Public
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Please provide an email" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "No user found with that email" });
+    }
+
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString("hex");
+
+    // Hash token and set to resetPasswordToken field
+    user.resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    // Set expire (10 minutes)
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    await user.save();
+
+    // Since we don't have mailer, we log it and return it in the response for convenience
+    console.log(`🔑 Reset token for ${email}: ${resetToken}`);
+
+    res.status(200).json({
+      success: true,
+      message: "Reset token generated successfully. (Check backend console / returned token in response)",
+      resetToken, // Returning for demo/testing convenience
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ── @desc    Reset Password
+// ── @route   POST /api/auth/reset-password/:token
+// ── @access  Public
+const resetPassword = async (req, res, next) => {
+  try {
+    // Get hashed token
+    const resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    }).select("+password");
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: "Invalid or expired token" });
+    }
+
+    // Set new password
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    // Sync to Employee collection
+    if (user.role === "employee") {
+      const emp = await Employee.findOne({ email: user.email });
+      if (emp) {
+        emp.password = req.body.password;
+        await emp.save();
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset successful! You can now log in.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, login, getProfile, updateProfile, updatePassword, forgotPassword, resetPassword };

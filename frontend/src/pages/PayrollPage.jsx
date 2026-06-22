@@ -1,272 +1,316 @@
-/**
- * PayrollPage.jsx
- * Displays employee salaries, calculates allowances/deductions/net pay,
- * and allows processing payroll.
- */
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEmployees, selectEmployees } from "../redux/slices/employeeSlice";
-import { FiDollarSign, FiCheckCircle, FiClock, FiSettings, FiActivity } from "react-icons/fi";
+import { fetchPayroll, updatePayrollStatus, processAllPayroll, fetchMyPayroll } from "../redux/slices/payrollSlice";
+import { selectUser } from "../redux/slices/authSlice";
+import { FiDollarSign, FiCheckCircle, FiClock, FiActivity, FiPrinter } from "react-icons/fi";
 import LoadingSpinner from "../components/LoadingSpinner";
-import toast from "react-hot-toast";
 
 const PayrollPage = () => {
   const dispatch = useDispatch();
-  const employees = useSelector(selectEmployees);
-  const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
-  const [paymentStatuses, setPaymentStatuses] = useState({});
+  const user = useSelector(selectUser);
+  const { records, loading } = useSelector((state) => state.payroll);
+  const isHR = user?.role === "master_hr";
 
-  // Get settings from localStorage
-  const currencySymbol = localStorage.getItem("ems_settings_currency") || "$";
-  const taxRate = parseFloat(localStorage.getItem("ems_settings_tax_rate") || "5");
+  const [selectedMonth, setSelectedMonth] = useState("June 2026");
+  const [selectedPayslip, setSelectedPayslip] = useState(null);
+
+  const months = ["June 2026", "May 2026", "April 2026", "March 2026"];
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      await dispatch(fetchEmployees({ limit: 100 }));
-      setLoading(false);
-    };
-    loadData();
-  }, [dispatch]);
-
-  // Load status from local state or initialize
-  useEffect(() => {
-    if (employees?.length > 0) {
-      const savedStatuses = localStorage.getItem("ems_payroll_statuses");
-      if (savedStatuses) {
-        setPaymentStatuses(JSON.parse(savedStatuses));
-      } else {
-        const initial = {};
-        employees.forEach((emp) => {
-          initial[emp._id] = "Pending";
-        });
-        setPaymentStatuses(initial);
-        localStorage.setItem("ems_payroll_statuses", JSON.stringify(initial));
-      }
+    if (isHR) {
+      dispatch(fetchPayroll(selectedMonth));
+    } else {
+      dispatch(fetchMyPayroll());
     }
-  }, [employees]);
+  }, [dispatch, isHR, selectedMonth]);
 
-  // Toggle individual status
-  const toggleStatus = (id) => {
-    const updated = {
-      ...paymentStatuses,
-      [id]: paymentStatuses[id] === "Paid" ? "Pending" : "Paid",
-    };
-    setPaymentStatuses(updated);
-    localStorage.setItem("ems_payroll_statuses", JSON.stringify(updated));
-    toast.success("Payroll status updated!");
+  const handleToggleStatus = (id, currentStatus) => {
+    const status = currentStatus === "Paid" ? "Pending" : "Paid";
+    dispatch(updatePayrollStatus({ id, status }));
   };
 
-  // Process all payroll
   const handleProcessAll = () => {
-    setProcessing(true);
-    setTimeout(() => {
-      const updated = {};
-      employees.forEach((emp) => {
-        updated[emp._id] = "Paid";
-      });
-      setPaymentStatuses(updated);
-      localStorage.setItem("ems_payroll_statuses", JSON.stringify(updated));
-      setProcessing(false);
-      toast.success("All payroll processed and paid successfully! 💸");
-    }, 1500);
+    if (window.confirm(`Are you sure you want to process all payroll for ${selectedMonth}?`)) {
+      dispatch(processAllPayroll(selectedMonth));
+    }
   };
 
-  // Math calculations
-  const calculateDetails = (baseSalary) => {
-    const allowance = baseSalary * 0.1; // 10%
-    const deduction = baseSalary * (taxRate / 100); // from settings
-    const netPay = baseSalary + allowance - deduction;
-    return { allowance, deduction, netPay };
-  };
-
-  // Calculate overall totals
+  // Math totals for HR
   let totalPayroll = 0;
   let paidAmount = 0;
   let pendingAmount = 0;
   let paidCount = 0;
   let pendingCount = 0;
 
-  if (employees?.length > 0) {
-    employees.forEach((emp) => {
-      const base = emp.salary || 0;
-      const { netPay } = calculateDetails(base);
-      totalPayroll += netPay;
-      const status = paymentStatuses[emp._id] || "Pending";
-      if (status === "Paid") {
-        paidAmount += netPay;
+  if (isHR && records?.length > 0) {
+    records.forEach((rec) => {
+      const net = rec.netSalary || 0;
+      totalPayroll += net;
+      if (rec.status === "Paid") {
+        paidAmount += net;
         paidCount++;
       } else {
-        pendingAmount += netPay;
+        pendingAmount += net;
         pendingCount++;
       }
     });
   }
 
-  return (
-    <div className="page">
-      {/* Page Header */}
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Payroll Management</h1>
-          <p className="page-subtitle">Calculate net salaries, process payments, and track payout statuses.</p>
-        </div>
-        <button
-          className="btn btn--primary"
-          onClick={handleProcessAll}
-          disabled={processing || employees?.length === 0 || pendingCount === 0}
-        >
-          {processing ? (
-            <>
-              <LoadingSpinner size="sm" />
-              <span>Processing...</span>
-            </>
-          ) : (
-            <>
-              <FiDollarSign size={16} />
-              <span>Process All Payroll</span>
-            </>
-          )}
-        </button>
-      </div>
+  const handlePrint = () => {
+    window.print();
+  };
 
-      {/* KPI Cards */}
-      <div className="stats-grid">
-        <div className="stats-card">
-          <div className="stats-card__orb stats-card__orb--blue">
-            <FiActivity size={20} />
-          </div>
-          <div className="stats-card__content">
-            <span className="stats-card__label">Total Monthly Payroll</span>
-            <span className="stats-card__value">
-              {currencySymbol}
-              {totalPayroll.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
+  if (!isHR) {
+    return (
+      <div className="page-container">
+        <div className="page-header">
+          <div>
+            <h1 className="page-title">My Payslips</h1>
+            <p className="page-desc">View and download your monthly salary statements</p>
           </div>
         </div>
 
-        <div className="stats-card">
-          <div className="stats-card__orb stats-card__orb--green">
-            <FiCheckCircle size={20} />
+        {loading ? (
+          <LoadingSpinner />
+        ) : records.length === 0 ? (
+          <div className="card card--empty">
+            <p>No payslip records found.</p>
           </div>
-          <div className="stats-card__content">
-            <span className="stats-card__label">Total Paid ({paidCount})</span>
-            <span className="stats-card__value">
-              {currencySymbol}
-              {paidAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-          </div>
-        </div>
-
-        <div className="stats-card">
-          <div className="stats-card__orb stats-card__orb--yellow">
-            <FiClock size={20} />
-          </div>
-          <div className="stats-card__content">
-            <span className="stats-card__label">Total Pending ({pendingCount})</span>
-            <span className="stats-card__value">
-              {currencySymbol}
-              {pendingAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Payroll Table */}
-      <div className="card" style={{ marginTop: "24px" }}>
-        <div className="card__header">
-          <h2 className="card__title">Employee Salary Breakdown</h2>
-        </div>
-        <div className="card__body" style={{ padding: 0 }}>
-          {loading ? (
-            <div style={{ padding: "40px" }}>
-              <LoadingSpinner size="md" />
-            </div>
-          ) : employees?.length === 0 ? (
-            <p className="empty-state">No employees found. Add employees to process payroll.</p>
-          ) : (
-            <div className="table-responsive">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Employee</th>
-                    <th>Base Salary</th>
-                    <th>Allowance (10%)</th>
-                    <th>Deduction ({taxRate}%)</th>
-                    <th>Net Salary</th>
-                    <th>Status</th>
-                    <th style={{ textAlign: "right" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {employees.map((emp) => {
-                    const base = emp.salary || 0;
-                    const { allowance, deduction, netPay } = calculateDetails(base);
-                    const status = paymentStatuses[emp._id] || "Pending";
-
-                    return (
-                      <tr key={emp._id}>
+        ) : (
+          <div style={{ display: "grid", gap: "16px" }}>
+            <div className="card overflow-hidden">
+              <div className="table-responsive">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Month</th>
+                      <th>Basic Salary</th>
+                      <th>Allowances</th>
+                      <th>Deductions</th>
+                      <th>Net Salary</th>
+                      <th>Status</th>
+                      <th style={{ textAlign: "right" }}>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {records.map((r) => (
+                      <tr key={r._id}>
+                        <td className="font-semibold text-white">{r.month}</td>
+                        <td>${r.basicSalary.toLocaleString()}</td>
+                        <td>${r.allowances.toLocaleString()}</td>
+                        <td>${r.deductions.toLocaleString()}</td>
+                        <td className="text-white font-semibold">${r.netSalary.toLocaleString()}</td>
                         <td>
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <div className="recent-item__avatar" style={{ margin: 0 }}>
-                              {emp.fullName.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>
-                                {emp.fullName}
-                              </div>
-                              <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>
-                                {emp.department} · {emp.designation}
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          {currencySymbol}
-                          {base.toLocaleString()}
-                        </td>
-                        <td style={{ color: "#10b981" }}>
-                          +{currencySymbol}
-                          {allowance.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                        </td>
-                        <td style={{ color: "#ef4444" }}>
-                          -{currencySymbol}
-                          {deduction.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                        </td>
-                        <td style={{ fontWeight: 700, color: "var(--clr-primary)" }}>
-                          {currencySymbol}
-                          {netPay.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </td>
-                        <td>
-                          <span
-                            className={`badge ${
-                              status === "Paid" ? "badge--paid" : "badge--pending"
-                            }`}
-                          >
-                            {status}
+                          <span className={`badge badge--${r.status === "Paid" ? "success" : "warning"}`}>
+                            {r.status}
                           </span>
                         </td>
                         <td style={{ textAlign: "right" }}>
                           <button
-                            className={`btn ${
-                              status === "Paid" ? "btn--ghost" : "btn--primary"
-                            } btn--sm`}
-                            onClick={() => toggleStatus(emp._id)}
+                            className="btn btn--sm btn--primary"
+                            onClick={() => setSelectedPayslip(r)}
                           >
-                            {status === "Paid" ? "Mark Pending" : "Mark Paid"}
+                            View Payslip
                           </button>
                         </td>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
+          </div>
+        )}
+
+        {selectedPayslip && (
+          <div className="modal-overlay">
+            <div className="modal-card payslip-modal" style={{ maxWidth: "500px", background: "#0f172a", color: "white", padding: "24px" }}>
+              <div id="print-area">
+                <div style={{ textAlign: "center", marginBottom: "20px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "16px" }}>
+                  <h2 style={{ margin: 0, fontSize: "22px", color: "white" }}>HR Connect</h2>
+                  <p style={{ margin: "4px 0 0 0", fontSize: "14px", color: "rgba(255,255,255,0.4)" }}>SALARY SLIP - {selectedPayslip.month}</p>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "20px", fontSize: "14px" }}>
+                  <div>
+                    <span style={{ color: "rgba(255,255,255,0.4)" }}>Employee Name:</span>
+                    <div style={{ fontWeight: "600" }}>{user?.fullName || user?.name}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: "rgba(255,255,255,0.4)" }}>Email:</span>
+                    <div style={{ fontWeight: "600" }}>{user?.email}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: "rgba(255,255,255,0.4)" }}>Department:</span>
+                    <div style={{ fontWeight: "600" }}>{user?.department || "-"}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: "rgba(255,255,255,0.4)" }}>Designation:</span>
+                    <div style={{ fontWeight: "600" }}>{user?.designation || "-"}</div>
+                  </div>
+                </div>
+
+                <div style={{ border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", overflow: "hidden", marginBottom: "20px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 14px", background: "rgba(255,255,255,0.05)", fontWeight: "600" }}>
+                    <span>Description</span>
+                    <span>Amount</span>
+                  </div>
+                  <div style={{ padding: "14px", display: "grid", gap: "10px", fontSize: "14px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span>Basic Salary</span>
+                      <span>${selectedPayslip.basicSalary.toLocaleString()}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#10b981" }}>
+                      <span>Allowances (Housing & Travel)</span>
+                      <span>+${selectedPayslip.allowances.toLocaleString()}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "#ef4444" }}>
+                      <span>Deductions (Taxes)</span>
+                      <span>-${selectedPayslip.deductions.toLocaleString()}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "10px", fontWeight: "700", fontSize: "16px" }}>
+                      <span>Net Pay</span>
+                      <span>${selectedPayslip.netSalary.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>Status:</span>
+                    <span className={`badge badge--${selectedPayslip.status === "Paid" ? "success" : "warning"}`} style={{ marginLeft: "8px" }}>
+                      {selectedPayslip.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "24px", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "16px" }}>
+                <button className="btn" style={{ background: "#374151" }} onClick={() => setSelectedPayslip(null)}>
+                  Close
+                </button>
+                <button className="btn btn--primary" onClick={handlePrint}>
+                  <FiPrinter style={{ marginRight: "6px" }} /> Print Payslip
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h1 className="page-title">Payroll Management</h1>
+          <p className="page-desc">Process employee salaries and payouts</p>
+        </div>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <select
+            className="form-input"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            style={{ background: "#1a1f36", color: "white", width: "160px" }}
+          >
+            {months.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+          <button
+            className="btn btn--primary"
+            onClick={handleProcessAll}
+            disabled={records.length === 0 || pendingCount === 0}
+          >
+            Process All Payroll
+          </button>
         </div>
       </div>
+
+      <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginBottom: "24px" }}>
+        <div className="card" style={{ display: "flex", gap: "12px", alignItems: "center", padding: "16px" }}>
+          <div style={{ background: "rgba(99,102,241,0.2)", padding: "10px", borderRadius: "8px", color: "#6366f1" }}>
+            <FiActivity size={24} />
+          </div>
+          <div>
+            <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.4)" }}>Total Monthly Payroll</div>
+            <div style={{ fontSize: "20px", fontWeight: "700", color: "white" }}>${totalPayroll.toLocaleString()}</div>
+          </div>
+        </div>
+        <div className="card" style={{ display: "flex", gap: "12px", alignItems: "center", padding: "16px" }}>
+          <div style={{ background: "rgba(16,185,129,0.2)", padding: "10px", borderRadius: "8px", color: "#10b981" }}>
+            <FiCheckCircle size={24} />
+          </div>
+          <div>
+            <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.4)" }}>Total Paid ({paidCount})</div>
+            <div style={{ fontSize: "20px", fontWeight: "700", color: "white" }}>${paidAmount.toLocaleString()}</div>
+          </div>
+        </div>
+        <div className="card" style={{ display: "flex", gap: "12px", alignItems: "center", padding: "16px" }}>
+          <div style={{ background: "rgba(245,158,11,0.2)", padding: "10px", borderRadius: "8px", color: "#f59e0b" }}>
+            <FiClock size={24} />
+          </div>
+          <div>
+            <div style={{ fontSize: "14px", color: "rgba(255,255,255,0.4)" }}>Total Pending ({pendingCount})</div>
+            <div style={{ fontSize: "20px", fontWeight: "700", color: "white" }}>${pendingAmount.toLocaleString()}</div>
+          </div>
+        </div>
+      </div>
+
+      {loading ? (
+        <LoadingSpinner />
+      ) : records.length === 0 ? (
+        <div className="card card--empty">
+          <p>No payroll records found for this month.</p>
+        </div>
+      ) : (
+        <div className="card overflow-hidden">
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Base Salary</th>
+                  <th>Allowances (10%)</th>
+                  <th>Deductions (5%)</th>
+                  <th>Net Salary</th>
+                  <th>Status</th>
+                  <th style={{ textAlign: "right" }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {records.map((r) => (
+                  <tr key={r._id}>
+                    <td>
+                      <div className="font-semibold text-white">{r.employeeId?.fullName}</div>
+                      <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>{r.employeeId?.email}</div>
+                    </td>
+                    <td>${r.basicSalary.toLocaleString()}</td>
+                    <td>${r.allowances.toLocaleString()}</td>
+                    <td>${r.deductions.toLocaleString()}</td>
+                    <td className="text-white font-semibold">${r.netSalary.toLocaleString()}</td>
+                    <td>
+                      <span className={`badge badge--${r.status === "Paid" ? "success" : "warning"}`}>
+                        {r.status}
+                      </span>
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      <button
+                        className="btn btn--sm"
+                        style={{ background: r.status === "Paid" ? "#ef4444" : "#10b981", color: "white" }}
+                        onClick={() => handleToggleStatus(r._id, r.status)}
+                      >
+                        {r.status === "Paid" ? "Mark Pending" : "Mark Paid"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -6,13 +6,15 @@
 const express = require("express");
 const router = express.Router();
 
-const { register, login, getProfile, updateProfile, updatePassword } = require("../controllers/authController");
+const { register, login, getProfile, updateProfile, updatePassword, forgotPassword, resetPassword } = require("../controllers/authController");
 const { protect } = require("../middleware/auth");
 const { validateRegister, validateLogin } = require("../middleware/validate");
 
 // Public routes
 router.post("/register", validateRegister, register);
 router.post("/login", validateLogin, login);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 
 // Protected routes
 router.get("/profile", protect, getProfile);

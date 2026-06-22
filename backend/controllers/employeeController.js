@@ -288,6 +288,54 @@ const getStats = async (req, res, next) => {
   }
 };
 
+const approveEmployee = async (req, res, next) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ success: false, message: "Employee not found" });
+    }
+    employee.status = "active";
+    await employee.save();
+
+    const User = require("../models/User");
+    const { logAction } = require("../utils/logger");
+    await logAction(req.user._id, "APPROVE_EMPLOYEE", `Approved registration for ${employee.email}`, req);
+
+    res.status(200).json({
+      success: true,
+      message: "Employee registration approved successfully",
+      data: employee,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const rejectEmployee = async (req, res, next) => {
+  try {
+    const employee = await Employee.findById(req.params.id);
+    if (!employee) {
+      return res.status(404).json({ success: false, message: "Employee not found" });
+    }
+    employee.status = "rejected";
+    await employee.save();
+
+    const User = require("../models/User");
+    await User.deleteOne({ email: employee.email });
+
+    const { logAction } = require("../utils/logger");
+    await logAction(req.user._id, "REJECT_EMPLOYEE", `Rejected registration for ${employee.email}`, req);
+
+    res.status(200).json({
+      success: true,
+      message: "Employee registration rejected successfully",
+      data: employee,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getEmployees,
   getEmployee,
@@ -295,4 +343,6 @@ module.exports = {
   updateEmployee,
   deleteEmployee,
   getStats,
+  approveEmployee,
+  rejectEmployee,
 };

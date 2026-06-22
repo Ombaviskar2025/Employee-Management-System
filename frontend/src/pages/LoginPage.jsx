@@ -133,6 +133,12 @@ const LoginPage = () => {
             )}
           </div>
 
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "16px" }}>
+            <Link to="/forgot-password" style={{ color: "#6366f1", fontSize: "14px", textDecoration: "none" }}>
+              Forgot Password?
+            </Link>
+          </div>
+
           <button
             type="submit"
             className="btn btn--primary btn--full btn--lg"
@@ -150,6 +156,14 @@ const LoginPage = () => {
             )}
           </button>
         </form>
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px" }}>
+            Don't have an account?{" "}
+            <Link to="/register" style={{ color: "#6366f1", fontWeight: "600", textDecoration: "none" }}>
+              Register here
+            </Link>
+          </span>
+        </div>
       </div>
     </div>
   );

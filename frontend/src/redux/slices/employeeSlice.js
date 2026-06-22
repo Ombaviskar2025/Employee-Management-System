@@ -88,6 +88,32 @@ export const fetchStats = createAsyncThunk(
   }
 );
 
+export const approveEmployee = createAsyncThunk(
+  "employees/approve",
+  async (id, { rejectWithValue }) => {
+    try {
+      const data = await employeeService.approveEmployee(id);
+      return data.data;
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to approve employee.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const rejectEmployee = createAsyncThunk(
+  "employees/reject",
+  async (id, { rejectWithValue }) => {
+    try {
+      await employeeService.rejectEmployee(id);
+      return id;
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to reject employee.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const employeeSlice = createSlice({
@@ -218,6 +244,40 @@ const employeeSlice = createSlice({
       })
       .addCase(fetchStats.rejected, (state, action) => {
         state.statsLoading = false;
+      });
+
+    // ── Approve Employee ──
+    builder
+      .addCase(approveEmployee.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(approveEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employees = state.employees.map((emp) =>
+          emp._id === action.payload._id ? action.payload : emp
+        );
+        toast.success("Employee approved successfully! 🎉");
+      })
+      .addCase(approveEmployee.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
+      });
+
+    // ── Reject Employee ──
+    builder
+      .addCase(rejectEmployee.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(rejectEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employees = state.employees.filter((emp) => emp._id !== action.payload);
+        toast.success("Employee registration rejected. ❌");
+      })
+      .addCase(rejectEmployee.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
       });
   },
 });

@@ -44,6 +44,18 @@ const employeeService = {
     const response = await api.get("/employees/stats");
     return response.data;
   },
+
+  /** Approve an employee registration */
+  approveEmployee: async (id) => {
+    const response = await api.put(`/employees/${id}/approve`);
+    return response.data;
+  },
+
+  /** Reject an employee registration */
+  rejectEmployee: async (id) => {
+    const response = await api.put(`/employees/${id}/reject`);
+    return response.data;
+  },
 };
 
 export default employeeService;

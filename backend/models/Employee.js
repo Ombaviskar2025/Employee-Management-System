@@ -70,7 +70,7 @@ const employeeSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "inactive", "on-leave"],
+      enum: ["active", "inactive", "on-leave", "pending", "rejected"],
       default: "active",
     },
     salary: {

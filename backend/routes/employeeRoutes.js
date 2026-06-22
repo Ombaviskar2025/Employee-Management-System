@@ -14,6 +14,8 @@ const {
   updateEmployee,
   deleteEmployee,
   getStats,
+  approveEmployee,
+  rejectEmployee,
 } = require("../controllers/employeeController");
 
 const { protect, authorize } = require("../middleware/auth");
@@ -37,5 +39,8 @@ router
   .get(getEmployee)            // GET    /api/employees/:id
   .put(updateEmployee)         // PUT    /api/employees/:id
   .delete(deleteEmployee);     // DELETE /api/employees/:id
+
+router.put("/:id/approve", approveEmployee);
+router.put("/:id/reject", rejectEmployee);
 
 module.exports = router;

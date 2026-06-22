@@ -38,6 +38,14 @@ const userSchema = new mongoose.Schema(
       enum: ["master_hr", "employee"],
       default: "employee",
     },
+    resetPasswordToken: {
+      type: String,
+      select: false,
+    },
+    resetPasswordExpire: {
+      type: Date,
+      select: false,
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt
