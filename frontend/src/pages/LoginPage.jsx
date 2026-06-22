@@ -90,7 +90,7 @@ const LoginPage = () => {
                 name="email"
                 type="email"
                 className={`form-input form-input--icon ${errors.email ? "form-input--error" : ""}`}
-                placeholder="you@example.com"
+                placeholder="Demo@gmail.com"
                 value={form.email}
                 onChange={handleChange}
                 autoComplete="email"

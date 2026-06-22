@@ -90,7 +90,7 @@ const RegisterPage = () => {
                   name="name"
                   type="text"
                   className={`form-input form-input--icon ${errors.name ? "form-input--error" : ""}`}
-                  placeholder="John Doe"
+                  placeholder="Name Surname"
                   value={form.name}
                   onChange={handleChange}
                   autoComplete="name"
@@ -110,7 +110,7 @@ const RegisterPage = () => {
                   name="email"
                   type="email"
                   className={`form-input form-input--icon ${errors.email ? "form-input--error" : ""}`}
-                  placeholder="you@example.com"
+                  placeholder="Demo@gmail.com"
                   value={form.email}
                   onChange={handleChange}
                   autoComplete="email"
