@@ -54,7 +54,15 @@ const RegisterPage = () => {
       toast.success(res.data.message || "Registration successful! Pending approval.");
       navigate("/login");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Registration failed");
+      const errorMsg = err.response?.data?.message || "Registration failed";
+      const validationErrors = err.response?.data?.errors;
+      if (validationErrors && Array.isArray(validationErrors)) {
+        validationErrors.forEach((e) => {
+          toast.error(e.message || errorMsg);
+        });
+      } else {
+        toast.error(errorMsg);
+      }
     } finally {
       setLoading(false);
     }

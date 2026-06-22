@@ -43,7 +43,10 @@ export const createEmployee = createAsyncThunk(
       const data = await employeeService.createEmployee(employeeData);
       return data.data;
     } catch (error) {
-      const message = error.response?.data?.message || "Failed to create employee.";
+      const errors = error.response?.data?.errors;
+      const message = errors && Array.isArray(errors)
+        ? errors.map((e) => e.message).join(", ")
+        : (error.response?.data?.message || "Failed to create employee.");
       return rejectWithValue(message);
     }
   }
@@ -56,7 +59,10 @@ export const updateEmployee = createAsyncThunk(
       const data = await employeeService.updateEmployee(id, employeeData);
       return data.data;
     } catch (error) {
-      const message = error.response?.data?.message || "Failed to update employee.";
+      const errors = error.response?.data?.errors;
+      const message = errors && Array.isArray(errors)
+        ? errors.map((e) => e.message).join(", ")
+        : (error.response?.data?.message || "Failed to update employee.");
       return rejectWithValue(message);
     }
   }

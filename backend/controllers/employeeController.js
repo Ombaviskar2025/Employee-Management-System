@@ -135,13 +135,26 @@ const createEmployee = async (req, res, next) => {
       });
     }
 
+    // Parse joining date safely
+    let parsedJoiningDate = new Date(joiningDate);
+    if (isNaN(parsedJoiningDate.getTime())) {
+      const parts = joiningDate.split(/[-/]/);
+      if (parts.length === 3) {
+        if (parts[2].length === 4) {
+          parsedJoiningDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        } else if (parts[0].length === 4) {
+          parsedJoiningDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
+        }
+      }
+    }
+
     const employee = await Employee.create({
       fullName,
       email,
       mobileNumber,
       department,
       designation,
-      joiningDate,
+      joiningDate: parsedJoiningDate,
       salary: salary || 0,
       password: password || "employee123",
       profilePhoto: profilePhoto || "",
@@ -191,6 +204,21 @@ const updateEmployee = async (req, res, next) => {
           message: "An employee with this email already exists",
         });
       }
+    }
+
+    if (req.body.joiningDate) {
+      let parsedJoiningDate = new Date(req.body.joiningDate);
+      if (isNaN(parsedJoiningDate.getTime())) {
+        const parts = req.body.joiningDate.split(/[-/]/);
+        if (parts.length === 3) {
+          if (parts[2].length === 4) {
+            parsedJoiningDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          } else if (parts[0].length === 4) {
+            parsedJoiningDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
+          }
+        }
+      }
+      req.body.joiningDate = parsedJoiningDate;
     }
 
     const updatedEmployee = await Employee.findByIdAndUpdate(

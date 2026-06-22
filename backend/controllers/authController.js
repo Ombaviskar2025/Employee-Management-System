@@ -25,6 +25,19 @@ const register = async (req, res, next) => {
       });
     }
 
+    // Parse joining date safely
+    let parsedJoiningDate = new Date(joiningDate);
+    if (isNaN(parsedJoiningDate.getTime())) {
+      const parts = joiningDate.split(/[-/]/);
+      if (parts.length === 3) {
+        if (parts[2].length === 4) {
+          parsedJoiningDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        } else if (parts[0].length === 4) {
+          parsedJoiningDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
+        }
+      }
+    }
+
     // Create Employee in 'pending' status
     const employee = await Employee.create({
       fullName,
@@ -32,7 +45,7 @@ const register = async (req, res, next) => {
       mobileNumber,
       department,
       designation,
-      joiningDate,
+      joiningDate: parsedJoiningDate,
       password,
       status: "pending",
     });

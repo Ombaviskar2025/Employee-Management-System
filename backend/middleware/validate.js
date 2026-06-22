@@ -19,6 +19,35 @@ const handleValidation = (req, res, next) => {
   next();
 };
 
+// ── Custom Date Format Validator ──────────────────────────────────────────────
+const validateDate = (value) => {
+  if (!value) return false;
+  const isoRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const inRegex = /^\d{2}-\d{2}-\d{4}$/;
+  const slashRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+  
+  if (isoRegex.test(value)) {
+    const d = new Date(value);
+    return !isNaN(d.getTime());
+  }
+  if (inRegex.test(value)) {
+    const [day, month, year] = value.split("-");
+    const d = new Date(`${year}-${month}-${day}`);
+    return !isNaN(d.getTime());
+  }
+  if (slashRegex.test(value)) {
+    const [day, month, year] = value.split("/");
+    const d = new Date(`${year}-${month}-${day}`);
+    return !isNaN(d.getTime());
+  }
+  
+  const date = new Date(value);
+  if (isNaN(date.getTime())) {
+    throw new Error("Please enter a valid date (YYYY-MM-DD or DD-MM-YYYY)");
+  }
+  return true;
+};
+
 // ── Auth Validators ───────────────────────────────────────────────────────────
 
 const validateRegister = [
@@ -48,7 +77,7 @@ const validateRegister = [
 
   body("joiningDate")
     .notEmpty().withMessage("Joining date is required")
-    .isISO8601().withMessage("Please enter a valid date (YYYY-MM-DD)"),
+    .custom(validateDate),
 
   body("password")
     .notEmpty().withMessage("Password is required")
@@ -100,7 +129,7 @@ const validateEmployee = [
 
   body("joiningDate")
     .notEmpty().withMessage("Joining date is required")
-    .isISO8601().withMessage("Please enter a valid date (YYYY-MM-DD)"),
+    .custom(validateDate),
 
   body("password")
     .optional()
