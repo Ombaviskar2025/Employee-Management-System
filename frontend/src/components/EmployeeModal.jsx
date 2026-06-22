@@ -109,7 +109,7 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
                   name="fullName"
                   type="text"
                   className={inputClass("fullName")}
-                  placeholder="John Doe"
+                  placeholder="Name Surname"
                   value={form.fullName}
                   onChange={handleChange}
                   autoComplete="name"
@@ -129,7 +129,7 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
                   name="email"
                   type="email"
                   className={inputClass("email")}
-                  placeholder="john@company.com"
+                  placeholder="Demo@gmail.com"
                   value={form.email}
                   onChange={handleChange}
                   autoComplete="email"
