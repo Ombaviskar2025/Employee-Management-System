@@ -75,8 +75,8 @@ const validateRegister = [
     .trim()
     .notEmpty().withMessage("Designation is required"),
 
-  body("joiningDate")
-    .notEmpty().withMessage("Joining date is required")
+  body("joinDate")
+    .notEmpty().withMessage("Join date is required")
     .custom(validateDate),
 
   body("password")
@@ -127,8 +127,8 @@ const validateEmployee = [
     .notEmpty().withMessage("Designation is required")
     .isLength({ min: 2, max: 100 }).withMessage("Designation must be 2-100 characters"),
 
-  body("joiningDate")
-    .notEmpty().withMessage("Joining date is required")
+  body("joinDate")
+    .notEmpty().withMessage("Join date is required")
     .custom(validateDate),
 
   body("password")

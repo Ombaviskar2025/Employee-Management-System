@@ -20,7 +20,7 @@ const EMPTY_FORM = {
   mobileNumber: "",
   department: "Engineering",
   designation: "",
-  joiningDate: "",
+  joinDate: "",
   salary: "",
   status: "active",
   password: "",
@@ -41,8 +41,8 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
         mobileNumber: employee.mobileNumber || "",
         department: employee.department || "",
         designation: employee.designation || "",
-        joiningDate: employee.joiningDate
-          ? new Date(employee.joiningDate).toISOString().split("T")[0]
+        joinDate: employee.joinDate
+          ? new Date(employee.joinDate).toISOString().split("T")[0]
           : "",
         salary: employee.salary || "",
         status: employee.status || "active",
@@ -202,22 +202,22 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
                 )}
               </div>
 
-              {/* Joining Date */}
+              {/* Join Date */}
               <div className="form-group">
-                <label className="form-label" htmlFor="emp-joiningDate">
-                  <FiCalendar size={14} /> Joining Date *
+                <label className="form-label" htmlFor="emp-joinDate">
+                  <FiCalendar size={14} /> Join Date *
                 </label>
                 <input
-                  id="emp-joiningDate"
-                  name="joiningDate"
+                  id="emp-joinDate"
+                  name="joinDate"
                   type="date"
-                  className={inputClass("joiningDate")}
-                  value={form.joiningDate}
+                  className={inputClass("joinDate")}
+                  value={form.joinDate}
                   onChange={handleChange}
                   max={new Date().toISOString().split("T")[0]}
                 />
-                {errors.joiningDate && (
-                  <span className="form-error">{errors.joiningDate}</span>
+                {errors.joinDate && (
+                  <span className="form-error">{errors.joinDate}</span>
                 )}
               </div>
 

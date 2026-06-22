@@ -54,7 +54,7 @@ const RegistrationsPage = () => {
                   <th>Mobile Number</th>
                   <th>Department</th>
                   <th>Designation</th>
-                  <th>Joining Date</th>
+                  <th>Join Date</th>
                   <th style={{ textAlign: "right" }}>Actions</th>
                 </tr>
               </thead>
@@ -68,7 +68,7 @@ const RegistrationsPage = () => {
                     <td>{emp.mobileNumber}</td>
                     <td>{emp.department}</td>
                     <td>{emp.designation}</td>
-                    <td>{new Date(emp.joiningDate).toLocaleDateString()}</td>
+                    <td>{new Date(emp.joinDate).toLocaleDateString()}</td>
                     <td>
                       <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
                         <button

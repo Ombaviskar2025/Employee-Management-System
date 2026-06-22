@@ -60,7 +60,7 @@ const getEmployees = async (req, res, next) => {
       "email",
       "department",
       "designation",
-      "joiningDate",
+      "joinDate",
       "createdAt",
       "salary",
     ];
@@ -122,7 +122,7 @@ const getEmployee = async (req, res, next) => {
 // ── @access  Private
 const createEmployee = async (req, res, next) => {
   try {
-    const { fullName, email, mobileNumber, department, designation, joiningDate, salary, password, profilePhoto, status } =
+    const { fullName, email, mobileNumber, department, designation, joinDate, salary, password, profilePhoto, status } =
       req.body;
 
     // Check for duplicate email in both collections
@@ -135,15 +135,15 @@ const createEmployee = async (req, res, next) => {
       });
     }
 
-    // Parse joining date safely
-    let parsedJoiningDate = new Date(joiningDate);
-    if (isNaN(parsedJoiningDate.getTime())) {
-      const parts = joiningDate.split(/[-/]/);
+    // Parse join date safely
+    let parsedJoinDate = new Date(joinDate);
+    if (isNaN(parsedJoinDate.getTime())) {
+      const parts = joinDate.split(/[-/]/);
       if (parts.length === 3) {
         if (parts[2].length === 4) {
-          parsedJoiningDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          parsedJoinDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
         } else if (parts[0].length === 4) {
-          parsedJoiningDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
+          parsedJoinDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
         }
       }
     }
@@ -154,7 +154,7 @@ const createEmployee = async (req, res, next) => {
       mobileNumber,
       department,
       designation,
-      joiningDate: parsedJoiningDate,
+      joinDate: parsedJoinDate,
       salary: salary || 0,
       password: password || "employee123",
       profilePhoto: profilePhoto || "",
@@ -206,19 +206,19 @@ const updateEmployee = async (req, res, next) => {
       }
     }
 
-    if (req.body.joiningDate) {
-      let parsedJoiningDate = new Date(req.body.joiningDate);
-      if (isNaN(parsedJoiningDate.getTime())) {
-        const parts = req.body.joiningDate.split(/[-/]/);
+    if (req.body.joinDate) {
+      let parsedJoinDate = new Date(req.body.joinDate);
+      if (isNaN(parsedJoinDate.getTime())) {
+        const parts = req.body.joinDate.split(/[-/]/);
         if (parts.length === 3) {
           if (parts[2].length === 4) {
-            parsedJoiningDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+            parsedJoinDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
           } else if (parts[0].length === 4) {
-            parsedJoiningDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
+            parsedJoinDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
           }
         }
       }
-      req.body.joiningDate = parsedJoiningDate;
+      req.body.joinDate = parsedJoinDate;
     }
 
     const updatedEmployee = await Employee.findByIdAndUpdate(
@@ -297,7 +297,7 @@ const getStats = async (req, res, next) => {
       Employee.find()
         .sort({ createdAt: -1 })
         .limit(5)
-        .select("fullName department designation joiningDate")
+        .select("fullName department designation joinDate")
         .lean(),
     ]);
 

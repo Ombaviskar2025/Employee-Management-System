@@ -57,8 +57,8 @@ export const validateEmployeeForm = (data, isCreate = false) => {
   const desigError = validateRequired(data.designation, "Designation");
   if (desigError) errors.designation = desigError;
 
-  const dateError = validateRequired(data.joiningDate, "Joining date");
-  if (dateError) errors.joiningDate = dateError;
+  const dateError = validateRequired(data.joinDate, "Join date");
+  if (dateError) errors.joinDate = dateError;
 
   if (isCreate) {
     const passError = validatePassword(data.password);

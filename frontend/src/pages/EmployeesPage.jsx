@@ -165,14 +165,14 @@ const EmployeesPage = () => {
                 toast.error("No employee data to export");
                 return;
               }
-              const headers = ["Full Name", "Email", "Mobile Number", "Department", "Designation", "Joining Date", "Status"];
+              const headers = ["Full Name", "Email", "Mobile Number", "Department", "Designation", "Join Date", "Status"];
               const rows = employees.map(emp => [
                 `"${emp.fullName}"`,
                 emp.email,
                 emp.mobileNumber,
                 `"${emp.department}"`,
                 `"${emp.designation}"`,
-                new Date(emp.joiningDate).toLocaleDateString(),
+                new Date(emp.joinDate).toLocaleDateString(),
                 emp.status
               ]);
               

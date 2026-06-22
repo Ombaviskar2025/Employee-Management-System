@@ -18,24 +18,46 @@ const connectDB = async () => {
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
 
-    // Seed Master HR
+    // Seed/Sync Master HR
     const email = process.env.MASTER_HR_EMAIL || "admin@hrconnect.com";
     const password = process.env.MASTER_HR_PASSWORD || "admin123";
     const name = "Master HR";
 
-    const existing = await User.findOne({ $or: [{ email }, { role: "master_hr" }] });
-    if (!existing) {
-      await User.create({
-        name,
-        email,
-        password,
-        role: "master_hr",
-      });
-      console.log(`👤 Master HR account seeded successfully: ${email}`);
-    } else if (existing.role !== "master_hr") {
-      existing.role = "master_hr";
-      await existing.save();
-      console.log(`👤 Seeded account role updated to master_hr: ${email}`);
+    let masterHR = await User.findOne({ role: "master_hr" });
+    if (!masterHR) {
+      // Check if email exists
+      const emailExists = await User.findOne({ email });
+      if (emailExists) {
+        emailExists.role = "master_hr";
+        emailExists.name = name;
+        emailExists.password = password;
+        await emailExists.save();
+        console.log(`👤 Existing user updated to Master HR: ${email}`);
+      } else {
+        await User.create({
+          name,
+          email,
+          password,
+          role: "master_hr",
+        });
+        console.log(`👤 Master HR account seeded successfully: ${email}`);
+      }
+    } else {
+      // Master HR exists, check if email/password need update to align with current env
+      let changed = false;
+      if (masterHR.email !== email) {
+        masterHR.email = email;
+        changed = true;
+      }
+      const isPasswordCorrect = await masterHR.matchPassword(password);
+      if (!isPasswordCorrect) {
+        masterHR.password = password;
+        changed = true;
+      }
+      if (changed) {
+        await masterHR.save();
+        console.log(`👤 Master HR account updated in DB to align with env variables: ${email}`);
+      }
     }
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);

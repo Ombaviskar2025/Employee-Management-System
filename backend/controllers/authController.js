@@ -13,7 +13,7 @@ const generateToken = require("../utils/generateToken");
 // ── @access  Public
 const register = async (req, res, next) => {
   try {
-    const { fullName, email, mobileNumber, department, designation, joiningDate, password } = req.body;
+    const { fullName, email, mobileNumber, department, designation, joinDate, password } = req.body;
 
     // Check duplicate email
     const existingEmp = await Employee.findOne({ email });
@@ -25,15 +25,15 @@ const register = async (req, res, next) => {
       });
     }
 
-    // Parse joining date safely
-    let parsedJoiningDate = new Date(joiningDate);
-    if (isNaN(parsedJoiningDate.getTime())) {
-      const parts = joiningDate.split(/[-/]/);
+    // Parse join date safely
+    let parsedJoinDate = new Date(joinDate);
+    if (isNaN(parsedJoinDate.getTime())) {
+      const parts = joinDate.split(/[-/]/);
       if (parts.length === 3) {
         if (parts[2].length === 4) {
-          parsedJoiningDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+          parsedJoinDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
         } else if (parts[0].length === 4) {
-          parsedJoiningDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
+          parsedJoinDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
         }
       }
     }
@@ -45,7 +45,7 @@ const register = async (req, res, next) => {
       mobileNumber,
       department,
       designation,
-      joiningDate: parsedJoiningDate,
+      joinDate: parsedJoinDate,
       password,
       status: "pending",
     });
@@ -147,7 +147,7 @@ const login = async (req, res, next) => {
           mobileNumber: empDetails.mobileNumber,
           department: empDetails.department,
           designation: empDetails.designation,
-          joiningDate: empDetails.joiningDate,
+          joinDate: empDetails.joinDate,
           profilePhoto: empDetails.profilePhoto,
           status: empDetails.status,
           salary: empDetails.salary,
@@ -190,7 +190,7 @@ const getProfile = async (req, res, next) => {
           mobileNumber: employeeDetails.mobileNumber,
           department: employeeDetails.department,
           designation: employeeDetails.designation,
-          joiningDate: employeeDetails.joiningDate,
+          joinDate: employeeDetails.joinDate,
           profilePhoto: employeeDetails.profilePhoto,
           status: employeeDetails.status,
           salary: employeeDetails.salary,

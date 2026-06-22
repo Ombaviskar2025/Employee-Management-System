@@ -64,9 +64,9 @@ const employeeSchema = new mongoose.Schema(
       minlength: [2, "Designation must be at least 2 characters"],
       maxlength: [100, "Designation cannot exceed 100 characters"],
     },
-    joiningDate: {
+    joinDate: {
       type: Date,
-      required: [true, "Joining date is required"],
+      required: [true, "Join date is required"],
     },
     status: {
       type: String,
@@ -122,7 +122,7 @@ employeeSchema.index({
 // ── Virtual: Years of service ─────────────────────────────────────────────────
 employeeSchema.virtual("yearsOfService").get(function () {
   const now = new Date();
-  const joining = new Date(this.joiningDate);
+  const joining = new Date(this.joinDate);
   const diff = now - joining;
   return (diff / (1000 * 60 * 60 * 24 * 365)).toFixed(1);
 });

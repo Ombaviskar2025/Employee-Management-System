@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 const FAQS = [
   {
     q: "How do I add a new employee to the system?",
-    a: "Click on the '+ Add Employee' button in the sidebar from any screen, or navigate to the 'Employees' tab and click the 'Add Employee' button at the top right. Fill in the required details (Name, Email, Mobile, Department, Designation, Joining Date, and Salary) and click save.",
+    a: "Click on the '+ Add Employee' button in the sidebar from any screen, or navigate to the 'Employees' tab and click the 'Add Employee' button at the top right. Fill in the required details (Name, Email, Mobile, Department, Designation, Join Date, and Salary) and click save.",
   },
   {
     q: "How do I update settings such as currency symbol or tax rates?",

@@ -17,7 +17,7 @@ const SORT_OPTIONS = [
   { value: "fullName", label: "Name" },
   { value: "department", label: "Department" },
   { value: "designation", label: "Designation" },
-  { value: "joiningDate", label: "Joining Date" },
+  { value: "joinDate", label: "Join Date" },
   { value: "salary", label: "Salary" },
 ];
 

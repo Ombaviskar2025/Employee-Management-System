@@ -27,7 +27,7 @@ const RegisterPage = () => {
     mobileNumber: "",
     department: "Engineering",
     designation: "",
-    joiningDate: "",
+    joinDate: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,7 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.fullName || !form.email || !form.mobileNumber || !form.designation || !form.joiningDate || !form.password) {
+    if (!form.fullName || !form.email || !form.mobileNumber || !form.designation || !form.joinDate || !form.password) {
       toast.error("Please fill in all fields");
       return;
     }
@@ -166,12 +166,12 @@ const RegisterPage = () => {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
             <div>
-              <label className="form-label">Joining Date</label>
+              <label className="form-label">Join Date</label>
               <input
-                name="joiningDate"
+                name="joinDate"
                 type="date"
                 className="form-input"
-                value={form.joiningDate}
+                value={form.joinDate}
                 onChange={handleChange}
                 required
                 style={{ colorScheme: "dark" }}
