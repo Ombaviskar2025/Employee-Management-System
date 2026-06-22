@@ -1,7 +1,7 @@
 /**
  * DeleteModal.jsx
  * Confirmation modal before deleting an employee.
- * Shows employee name for confirmation.
+ * HR Connect Midnight Indigo design.
  */
 
 import { FiAlertTriangle, FiX } from "react-icons/fi";
@@ -12,33 +12,33 @@ const DeleteModal = ({ employee, onConfirm, onCancel, loading = false }) => {
   return (
     <div className="modal-overlay" onClick={onCancel} role="dialog" aria-modal="true">
       <div
-        className="modal-box modal-box--danger"
+        className="modal-box"
+        style={{ maxWidth: "440px" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="modal-header">
-          <div className="modal-header__icon modal-header__icon--danger">
-            <FiAlertTriangle size={24} />
-          </div>
+          <h2 className="modal-title">Delete Employee</h2>
           <button
             className="modal-close"
             onClick={onCancel}
             aria-label="Close dialog"
           >
-            <FiX size={20} />
+            <FiX size={18} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="modal-body">
-          <h2 className="modal-title">Delete Employee</h2>
-          <p className="modal-desc">
-            Are you sure you want to delete{" "}
-            <strong>{employee.fullName}</strong>?
+        <div className="modal-body" style={{ textAlign: "center" }}>
+          <div className="delete-modal-icon">
+            <FiAlertTriangle size={28} />
+          </div>
+          <p className="delete-modal-text">
+            Are you sure you want to permanently delete{" "}
+            <span className="delete-modal-name">{employee.fullName}</span>?
           </p>
-          <p className="modal-desc modal-desc--muted">
-            This action cannot be undone. All data associated with this
-            employee will be permanently removed.
+          <p className="delete-modal-text" style={{ marginTop: "8px", fontSize: "13px" }}>
+            This action cannot be undone. All associated data will be removed.
           </p>
         </div>
 
@@ -59,7 +59,7 @@ const DeleteModal = ({ employee, onConfirm, onCancel, loading = false }) => {
           >
             {loading ? (
               <>
-                <span className="btn-spinner" />
+                <span className="btn-spinner" style={{ borderTopColor: "currentColor" }} />
                 Deleting...
               </>
             ) : (

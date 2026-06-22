@@ -1,24 +1,18 @@
 /**
  * LoadingSpinner.jsx
  * Animated loading spinner component.
- * Can be used inline or as a full-page overlay.
+ * HR Connect Midnight Indigo design.
  */
 
 const LoadingSpinner = ({ fullPage = false, size = "md", text = "" }) => {
-  const sizes = {
-    sm: "spinner-sm",
-    md: "spinner-md",
-    lg: "spinner-lg",
-  };
+  const sizes = { sm: "spinner--sm", md: "spinner--md", lg: "spinner--lg" };
 
-  const spinner = (
-    <div className={`spinner-wrapper ${fullPage ? "spinner-fullpage" : ""}`}>
-      <div className={`spinner ${sizes[size]}`} />
+  return (
+    <div className={`spinner-wrap ${fullPage ? "spinner-wrap--fullpage" : ""}`}>
+      <div className={`spinner ${sizes[size] || "spinner--md"}`} />
       {text && <p className="spinner-text">{text}</p>}
     </div>
   );
-
-  return spinner;
 };
 
 export default LoadingSpinner;

@@ -1,6 +1,7 @@
 /**
  * EmployeesPage.jsx
  * Full employee management page: search, filter, sort, CRUD, pagination.
+ * HR Connect Midnight Indigo design.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -148,7 +149,7 @@ const EmployeesPage = () => {
             title="Export (coming soon)"
             disabled
           >
-            <FiDownload size={16} />
+            <FiDownload size={15} />
             Export
           </button>
           <button
@@ -156,7 +157,7 @@ const EmployeesPage = () => {
             onClick={handleOpenAdd}
             id="add-employee-btn"
           >
-            <FiPlus size={18} />
+            <FiPlus size={17} />
             Add Employee
           </button>
         </div>

@@ -1,6 +1,7 @@
 /**
  * StatsCard.jsx
- * Dashboard KPI stat card with icon, value, label, and trend.
+ * Dashboard KPI stat card.
+ * HR Connect Midnight Indigo design — glass card with glowing icon orb.
  */
 
 const StatsCard = ({ icon: Icon, label, value, trend, color = "blue", loading = false }) => {
@@ -21,10 +22,9 @@ const StatsCard = ({ icon: Icon, label, value, trend, color = "blue", loading = 
           )}
         </div>
         <div className="stats-card__icon-wrap">
-          <Icon size={28} />
+          {loading ? null : <Icon size={26} />}
         </div>
       </div>
-      <div className="stats-card__glow" />
     </div>
   );
 };

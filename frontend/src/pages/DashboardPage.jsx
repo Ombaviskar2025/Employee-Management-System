@@ -1,6 +1,7 @@
 /**
  * DashboardPage.jsx
  * Main HR dashboard showing KPI stats and recent employees.
+ * HR Connect Midnight Indigo design.
  */
 
 import { useEffect } from "react";
@@ -41,7 +42,9 @@ const DashboardPage = () => {
       <div className="page-header">
         <div>
           <h1 className="page-title">
-            {greeting}, {user?.name?.split(" ")[0]} 👋
+            {greeting},{" "}
+            <span className="text-gradient">{user?.name?.split(" ")[0]}</span>{" "}
+            👋
           </h1>
           <p className="page-subtitle">
             Here&apos;s what&apos;s happening in your organization today.
@@ -101,7 +104,7 @@ const DashboardPage = () => {
               className="btn btn--ghost btn--sm"
               onClick={() => navigate("/employees")}
             >
-              View all <FiArrowRight size={14} />
+              View all <FiArrowRight size={13} />
             </button>
           </div>
           <div className="card__body">

@@ -1,12 +1,13 @@
 /**
  * LoginPage.jsx
- * Authentication login page with form validation and animated UI.
+ * Authentication login page.
+ * HR Connect Midnight Indigo design — glassmorphism card, glowing background.
  */
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { FiMail, FiLock, FiEye, FiEyeOff, FiGrid } from "react-icons/fi";
+import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { loginUser } from "../redux/slices/authSlice";
 import { selectIsAuthenticated } from "../redux/slices/authSlice";
 import { useSelector } from "react-redux";
@@ -60,7 +61,12 @@ const LoginPage = () => {
         {/* Logo */}
         <div className="auth-logo">
           <div className="auth-logo__icon">
-            <FiGrid size={28} />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/>
+              <rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.6"/>
+              <rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.6"/>
+              <rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/>
+            </svg>
           </div>
           <div>
             <h1 className="auth-logo__title">EMS Pro</h1>
@@ -78,7 +84,7 @@ const LoginPage = () => {
               Email Address
             </label>
             <div className="input-icon-wrap">
-              <FiMail className="input-icon" size={16} />
+              <FiMail className="input-icon" size={15} />
               <input
                 id="login-email"
                 name="email"
@@ -102,7 +108,7 @@ const LoginPage = () => {
               Password
             </label>
             <div className="input-icon-wrap">
-              <FiLock className="input-icon" size={16} />
+              <FiLock className="input-icon" size={15} />
               <input
                 id="login-password"
                 name="password"
@@ -119,7 +125,7 @@ const LoginPage = () => {
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                {showPassword ? <FiEyeOff size={15} /> : <FiEye size={15} />}
               </button>
             </div>
             {errors.password && (
@@ -129,9 +135,10 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            className="btn btn--primary btn--full"
+            className="btn btn--primary btn--full btn--lg"
             disabled={loading}
             id="login-submit-btn"
+            style={{ marginTop: "4px" }}
           >
             {loading ? (
               <>

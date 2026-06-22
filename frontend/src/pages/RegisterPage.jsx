@@ -1,12 +1,13 @@
 /**
  * RegisterPage.jsx
  * New user registration page.
+ * HR Connect Midnight Indigo design.
  */
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiGrid } from "react-icons/fi";
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { registerUser, selectIsAuthenticated } from "../redux/slices/authSlice";
 import { validateRegisterForm } from "../utils/validators";
 
@@ -57,11 +58,16 @@ const RegisterPage = () => {
       <div className="auth-blob auth-blob--1" />
       <div className="auth-blob auth-blob--2" />
 
-      <div className="auth-card auth-card--wide">
+      <div className="auth-card" style={{ maxWidth: "500px" }}>
         {/* Logo */}
         <div className="auth-logo">
           <div className="auth-logo__icon">
-            <FiGrid size={28} />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/>
+              <rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.6"/>
+              <rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.6"/>
+              <rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/>
+            </svg>
           </div>
           <div>
             <h1 className="auth-logo__title">EMS Pro</h1>
@@ -73,12 +79,12 @@ const RegisterPage = () => {
         <p className="auth-desc">Get started with EMS Pro today</p>
 
         <form onSubmit={handleSubmit} noValidate className="auth-form">
-          <div className="form-grid">
+          <div className="form-grid" style={{ gridTemplateColumns: "1fr" }}>
             {/* Name */}
-            <div className="form-group form-group--full">
+            <div className="form-group">
               <label className="form-label" htmlFor="reg-name">Full Name</label>
               <div className="input-icon-wrap">
-                <FiUser className="input-icon" size={16} />
+                <FiUser className="input-icon" size={15} />
                 <input
                   id="reg-name"
                   name="name"
@@ -95,10 +101,10 @@ const RegisterPage = () => {
             </div>
 
             {/* Email */}
-            <div className="form-group form-group--full">
+            <div className="form-group">
               <label className="form-label" htmlFor="reg-email">Email Address</label>
               <div className="input-icon-wrap">
-                <FiMail className="input-icon" size={16} />
+                <FiMail className="input-icon" size={15} />
                 <input
                   id="reg-email"
                   name="email"
@@ -117,7 +123,7 @@ const RegisterPage = () => {
             <div className="form-group">
               <label className="form-label" htmlFor="reg-password">Password</label>
               <div className="input-icon-wrap">
-                <FiLock className="input-icon" size={16} />
+                <FiLock className="input-icon" size={15} />
                 <input
                   id="reg-password"
                   name="password"
@@ -134,7 +140,7 @@ const RegisterPage = () => {
                   onClick={() => setShowPass((v) => !v)}
                   aria-label="Toggle password visibility"
                 >
-                  {showPass ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                  {showPass ? <FiEyeOff size={15} /> : <FiEye size={15} />}
                 </button>
               </div>
               {errors.password && <span className="form-error">{errors.password}</span>}
@@ -144,7 +150,7 @@ const RegisterPage = () => {
             <div className="form-group">
               <label className="form-label" htmlFor="reg-confirm">Confirm Password</label>
               <div className="input-icon-wrap">
-                <FiLock className="input-icon" size={16} />
+                <FiLock className="input-icon" size={15} />
                 <input
                   id="reg-confirm"
                   name="confirmPassword"
@@ -164,9 +170,10 @@ const RegisterPage = () => {
 
           <button
             type="submit"
-            className="btn btn--primary btn--full"
+            className="btn btn--primary btn--full btn--lg"
             disabled={loading}
             id="register-submit-btn"
+            style={{ marginTop: "8px" }}
           >
             {loading ? (
               <>

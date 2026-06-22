@@ -1,6 +1,7 @@
 /**
  * Pagination.jsx
  * Page navigation controls with prev/next and numbered pages.
+ * HR Connect Midnight Indigo design.
  */
 
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
@@ -10,7 +11,7 @@ const Pagination = ({ pagination, onPageChange }) => {
 
   if (totalPages <= 1) return null;
 
-  // Generate page number array (max 5 shown, with ellipsis)
+  // Generate page number array (max 5 shown)
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
@@ -43,7 +44,6 @@ const Pagination = ({ pagination, onPageChange }) => {
       </span>
 
       <div className="pagination__controls">
-        {/* Prev */}
         <button
           className="pagination__btn"
           onClick={() => onPageChange(page - 1)}
@@ -53,10 +53,15 @@ const Pagination = ({ pagination, onPageChange }) => {
           <FiChevronLeft size={16} />
         </button>
 
-        {/* Page numbers */}
         {getPageNumbers().map((p, idx) =>
           p === "..." ? (
-            <span key={`ellipsis-${idx}`} className="pagination__ellipsis">…</span>
+            <span
+              key={`ellipsis-${idx}`}
+              className="pagination__ellipsis"
+              style={{ padding: "0 4px", color: "var(--text-muted)" }}
+            >
+              …
+            </span>
           ) : (
             <button
               key={p}
@@ -70,7 +75,6 @@ const Pagination = ({ pagination, onPageChange }) => {
           )
         )}
 
-        {/* Next */}
         <button
           className="pagination__btn"
           onClick={() => onPageChange(page + 1)}

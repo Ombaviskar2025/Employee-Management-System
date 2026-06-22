@@ -1,13 +1,11 @@
 /**
  * Sidebar.jsx
  * Left navigation sidebar with branding, nav links, and user info.
- * Collapses on mobile.
+ * HR Connect Midnight Indigo design.
  */
 
 import { NavLink } from "react-router-dom";
-import {
-  FiHome, FiUsers, FiLogOut, FiX, FiGrid,
-} from "react-icons/fi";
+import { FiHome, FiUsers, FiLogOut, FiX } from "react-icons/fi";
 import useAuth from "../hooks/useAuth";
 
 const NAV_ITEMS = [
@@ -29,7 +27,12 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Branding */}
         <div className="sidebar__brand">
           <div className="sidebar__logo">
-            <FiGrid size={22} />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/>
+              <rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.6"/>
+              <rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.6"/>
+              <rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/>
+            </svg>
           </div>
           <div className="sidebar__brand-text">
             <span className="sidebar__app-name">EMS Pro</span>
@@ -40,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             onClick={onClose}
             aria-label="Close sidebar"
           >
-            <FiX size={20} />
+            <FiX size={18} />
           </button>
         </div>
 
@@ -55,7 +58,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               }
               onClick={onClose}
             >
-              <Icon size={18} />
+              <Icon size={17} />
               <span>{label}</span>
               <span className="sidebar__link-indicator" />
             </NavLink>
@@ -79,7 +82,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             title="Log out"
             aria-label="Log out"
           >
-            <FiLogOut size={18} />
+            <FiLogOut size={16} />
             <span>Logout</span>
           </button>
         </div>

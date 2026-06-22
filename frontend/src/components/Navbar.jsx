@@ -1,6 +1,7 @@
 /**
  * Navbar.jsx
- * Top navigation bar with breadcrumb, dark mode toggle, and mobile menu.
+ * Top navigation bar with breadcrumb, dark mode toggle, and user avatar.
+ * HR Connect Midnight Indigo design.
  */
 
 import { useLocation } from "react-router-dom";
@@ -19,14 +20,14 @@ const Navbar = ({ onMenuClick, isDark, onDarkToggle }) => {
 
   return (
     <header className="navbar">
-      {/* Left: hamburger + page title */}
+      {/* Left: hamburger + breadcrumb */}
       <div className="navbar__left">
         <button
           className="navbar__menu-btn"
           onClick={onMenuClick}
           aria-label="Open sidebar"
         >
-          <FiMenu size={22} />
+          <FiMenu size={20} />
         </button>
         <div className="navbar__breadcrumb">
           <span className="navbar__page">EMS Pro</span>
@@ -44,14 +45,16 @@ const Navbar = ({ onMenuClick, isDark, onDarkToggle }) => {
           aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           title={isDark ? "Light mode" : "Dark mode"}
         >
-          {isDark ? <FiSun size={20} /> : <FiMoon size={20} />}
+          {isDark ? <FiSun size={18} /> : <FiMoon size={18} />}
         </button>
 
-        {/* Notifications (decorative) */}
+        {/* Notifications */}
         <button className="navbar__icon-btn navbar__notif" aria-label="Notifications">
-          <FiBell size={20} />
+          <FiBell size={18} />
           <span className="navbar__notif-dot" />
         </button>
+
+        <div className="navbar__divider" />
 
         {/* User avatar */}
         <div className="navbar__user">
