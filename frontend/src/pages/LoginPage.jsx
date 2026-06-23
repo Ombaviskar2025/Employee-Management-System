@@ -48,7 +48,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between overflow-hidden relative" style={{ backgroundColor: "#0d0d15", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div className="min-h-screen flex flex-col justify-between overflow-y-auto relative" style={{ backgroundColor: "#0d0d15", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       {/* Dynamic Background Elements */}
       <div className="mesh-blob bg-secondary-container top-[-10%] left-[-10%]"></div>
       <div className="mesh-blob bg-primary-container bottom-[-10%] right-[-10%]" style={{ animationDelay: "-5s" }}></div>

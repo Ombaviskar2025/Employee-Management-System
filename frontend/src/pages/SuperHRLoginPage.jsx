@@ -50,7 +50,7 @@ const SuperHRLoginPage = () => {
   };
 
   return (
-    <div className="auth-page" style={{ background: "radial-gradient(circle at 50% 50%, #0d091e 0%, #05030a 100%)" }}>
+    <div className="auth-page overflow-y-auto" style={{ background: "radial-gradient(circle at 50% 50%, #0d091e 0%, #05030a 100%)" }}>
       {/* Premium Purple glowing blobs */}
       <div className="auth-blob" style={{ background: "rgba(168, 85, 247, 0.15)", top: "10%", left: "10%", width: "400px", height: "400px", filter: "blur(120px)" }} />
       <div className="auth-blob" style={{ background: "rgba(236, 72, 153, 0.12)", bottom: "10%", right: "10%", width: "450px", height: "450px", filter: "blur(130px)" }} />
