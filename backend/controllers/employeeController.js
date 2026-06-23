@@ -151,7 +151,7 @@ const createEmployee = async (req, res, next) => {
       department,
       designation,
       salary: salary || 0,
-      password: password || "employee123",
+      password: password || "HRConnectEmployee#2026!",
       profilePhoto: profilePhoto || "",
       status: status || "active",
     });
@@ -159,7 +159,7 @@ const createEmployee = async (req, res, next) => {
     await User.create({
       name: fullName,
       email,
-      password: password || "employee123",
+      password: password || "HRConnectEmployee#2026!",
       role: "employee",
     });
 

@@ -6,6 +6,7 @@
 
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const Employee = require("../models/Employee");
 
 const connectDB = async () => {
   try {
@@ -20,7 +21,7 @@ const connectDB = async () => {
 
     // Seed/Sync Master HR
     const email = process.env.MASTER_HR_EMAIL || "admin@hrconnect.com";
-    const password = process.env.MASTER_HR_PASSWORD || "admin123";
+    const password = process.env.MASTER_HR_PASSWORD || "HRConnect#2026!Admin";
     const name = "Master HR";
 
     let masterHR = await User.findOne({ role: "master_hr" }).select("+password");
@@ -57,6 +58,25 @@ const connectDB = async () => {
       if (changed) {
         await masterHR.save();
         console.log(`👤 Master HR account updated in DB to align with env variables: ${email}`);
+      }
+    }
+
+    // 🔒 Security Migration: Scan and migrate any weak employee passwords that match their email
+    const employees = await User.find({ role: "employee" });
+    for (const userInstance of employees) {
+      const matchesEmail = await userInstance.matchPassword(userInstance.email);
+      if (matchesEmail) {
+        const emailPrefix = userInstance.email.split("@")[0];
+        const securePassword = `HRConnect#${emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1)}!2026`;
+        userInstance.password = securePassword;
+        await userInstance.save();
+
+        const empInstance = await Employee.findOne({ email: userInstance.email });
+        if (empInstance) {
+          empInstance.password = securePassword;
+          await empInstance.save();
+        }
+        console.log(`🔒 Security Migration: Updated weak password for employee: ${userInstance.email} to secure format.`);
       }
     }
   } catch (error) {

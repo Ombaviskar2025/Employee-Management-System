@@ -34,7 +34,10 @@ connectDB();
 
 const app = express();
 
-// Secure Express headers
+// Trust reverse proxy for rate limiting (Render, Vercel, etc.)
+app.set("trust proxy", 1);
+
+// Secure Express headers (helmet must be registered early)
 app.use(helmet());
 
 // Compress API responses
@@ -71,9 +74,8 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
-      // Allow any .vercel.app subdomain in production, or if allowedOrigins contains "*"
+      // Whitelist only explicit origins configured in allowedOrigins or wildcard '*' (for dev/local use)
       if (
-        origin.endsWith(".vercel.app") ||
         allowedOrigins.includes(origin) ||
         allowedOrigins.includes("*")
       ) {
