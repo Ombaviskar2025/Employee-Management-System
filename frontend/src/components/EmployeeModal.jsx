@@ -20,7 +20,6 @@ const EMPTY_FORM = {
   mobileNumber: "",
   department: "Engineering",
   designation: "",
-  joinDate: "",
   salary: "",
   status: "active",
   password: "",
@@ -41,9 +40,6 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
         mobileNumber: employee.mobileNumber || "",
         department: employee.department || "",
         designation: employee.designation || "",
-        joinDate: employee.joinDate
-          ? new Date(employee.joinDate).toISOString().split("T")[0]
-          : "",
         salary: employee.salary || "",
         status: employee.status || "active",
       });
@@ -202,24 +198,7 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
                 )}
               </div>
 
-              {/* Join Date */}
-              <div className="form-group">
-                <label className="form-label" htmlFor="emp-joinDate">
-                  <FiCalendar size={14} /> Join Date *
-                </label>
-                <input
-                  id="emp-joinDate"
-                  name="joinDate"
-                  type="date"
-                  className={inputClass("joinDate")}
-                  value={form.joinDate}
-                  onChange={handleChange}
-                  max={new Date().toISOString().split("T")[0]}
-                />
-                {errors.joinDate && (
-                  <span className="form-error">{errors.joinDate}</span>
-                )}
-              </div>
+
 
               {/* Salary */}
               <div className="form-group">

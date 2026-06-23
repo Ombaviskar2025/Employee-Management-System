@@ -44,7 +44,7 @@ const LoginPage = () => {
       return;
     }
     setLoading(true);
-    const result = await dispatch(loginUser(form));
+    const result = await dispatch(loginUser({ ...form, requiredRole: "employee" }));
     setLoading(false);
     if (loginUser.fulfilled.match(result)) {
       navigate(from, { replace: true });
@@ -69,13 +69,13 @@ const LoginPage = () => {
             </svg>
           </div>
           <div>
-            <h1 className="auth-logo__title">EMS Pro</h1>
-            <p className="auth-logo__sub">Employee Management System</p>
+            <h1 className="auth-logo__title">HR Connect</h1>
+            <p className="auth-logo__sub">Employee Portal</p>
           </div>
         </div>
 
-        <h2 className="auth-title">Welcome back 👋</h2>
-        <p className="auth-desc">Sign in to your account to continue</p>
+        <h2 className="auth-title">Employee Sign In 👋</h2>
+        <p className="auth-desc">Sign in to your employee account to continue</p>
 
         <form onSubmit={handleSubmit} noValidate className="auth-form">
           {/* Email */}
@@ -157,10 +157,16 @@ const LoginPage = () => {
           </button>
         </form>
         <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px" }}>
+          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", display: "block", marginBottom: "8px" }}>
             Don't have an account?{" "}
             <Link to="/register" style={{ color: "#6366f1", fontWeight: "600", textDecoration: "none" }}>
               Register here
+            </Link>
+          </span>
+          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>
+            Are you a Super HR Admin?{" "}
+            <Link to="/super-hr-login" style={{ color: "#a855f7", fontWeight: "600", textDecoration: "none", borderBottom: "1px dashed #a855f7", paddingBottom: "2px" }}>
+              Super HR Portal
             </Link>
           </span>
         </div>

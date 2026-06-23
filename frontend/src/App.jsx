@@ -23,6 +23,7 @@ import DocumentPage from "./pages/DocumentPage";
 import AuditLogPage from "./pages/AuditLogPage";
 
 import LoginPage from "./pages/LoginPage";
+import SuperHRLoginPage from "./pages/SuperHRLoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import EmployeesPage from "./pages/EmployeesPage";
 import PayrollPage from "./pages/PayrollPage";
@@ -72,6 +73,7 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/super-hr-login" element={<SuperHRLoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />

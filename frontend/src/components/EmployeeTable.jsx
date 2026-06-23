@@ -87,7 +87,7 @@ const EmployeeTable = ({
             <th className="th">Mobile</th>
             <th className="th">{thBtn("department", "Department")}</th>
             <th className="th">{thBtn("designation", "Designation")}</th>
-            <th className="th">{thBtn("joinDate", "Join Date")}</th>
+
             <th className="th">Status</th>
             <th className="th th--actions">Actions</th>
           </tr>
@@ -110,11 +110,7 @@ const EmployeeTable = ({
                 <span className="dept-tag">{emp.department}</span>
               </td>
               <td className="td">{emp.designation}</td>
-              <td className="td">
-                {emp.joinDate
-                  ? format(new Date(emp.joinDate), "dd MMM yyyy")
-                  : "—"}
-              </td>
+
               <td className="td">
                 <span className={`badge ${STATUS_COLORS[emp.status] || "badge--green"}`}>
                   {STATUS_LABELS[emp.status] || "Active"}

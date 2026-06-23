@@ -188,15 +188,7 @@ const ProfilePage = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <FiCalendar size={16} style={{ color: "var(--text-muted)", flexShrink: 0 }} />
-                    <div>
-                      <span style={{ display: "block", fontSize: "11px", color: "var(--text-muted)" }}>Date of Join</span>
-                      <span style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-primary)" }}>
-                        {user.joinDate ? new Date(user.joinDate).toLocaleDateString(undefined, { dateStyle: "long" }) : "—"}
-                      </span>
-                    </div>
-                  </div>
+
                 </>
               )}
             </div>

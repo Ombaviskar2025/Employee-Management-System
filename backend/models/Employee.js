@@ -64,10 +64,7 @@ const employeeSchema = new mongoose.Schema(
       minlength: [2, "Designation must be at least 2 characters"],
       maxlength: [100, "Designation cannot exceed 100 characters"],
     },
-    joinDate: {
-      type: Date,
-      required: [true, "Join date is required"],
-    },
+
     status: {
       type: String,
       enum: ["active", "inactive", "on-leave", "pending", "rejected"],
@@ -119,13 +116,7 @@ employeeSchema.index({
   department: "text",
 });
 
-// ── Virtual: Years of service ─────────────────────────────────────────────────
-employeeSchema.virtual("yearsOfService").get(function () {
-  const now = new Date();
-  const joining = new Date(this.joinDate);
-  const diff = now - joining;
-  return (diff / (1000 * 60 * 60 * 24 * 365)).toFixed(1);
-});
+
 
 // Ensure virtuals appear in JSON
 employeeSchema.set("toJSON", { virtuals: true });

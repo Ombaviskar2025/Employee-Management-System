@@ -124,8 +124,8 @@ const DashboardPage = () => {
                       </span>
                     </div>
                     <span className="recent-item__date">
-                      {emp.joinDate
-                        ? format(new Date(emp.joinDate), "dd MMM")
+                      {emp.createdAt
+                        ? format(new Date(emp.createdAt), "dd MMM")
                         : "—"}
                     </span>
                   </li>

@@ -13,7 +13,7 @@ const generateToken = require("../utils/generateToken");
 // ── @access  Public
 const register = async (req, res, next) => {
   try {
-    const { fullName, email, mobileNumber, department, designation, joinDate, password } = req.body;
+    const { fullName, email, mobileNumber, department, designation, password } = req.body;
 
     // Check duplicate email
     const existingEmp = await Employee.findOne({ email });
@@ -25,19 +25,6 @@ const register = async (req, res, next) => {
       });
     }
 
-    // Parse join date safely
-    let parsedJoinDate = new Date(joinDate);
-    if (isNaN(parsedJoinDate.getTime())) {
-      const parts = joinDate.split(/[-/]/);
-      if (parts.length === 3) {
-        if (parts[2].length === 4) {
-          parsedJoinDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-        } else if (parts[0].length === 4) {
-          parsedJoinDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}`);
-        }
-      }
-    }
-
     // Create Employee in 'pending' status
     const employee = await Employee.create({
       fullName,
@@ -45,7 +32,6 @@ const register = async (req, res, next) => {
       mobileNumber,
       department,
       designation,
-      joinDate: parsedJoinDate,
       password,
       status: "pending",
     });
@@ -77,7 +63,7 @@ const register = async (req, res, next) => {
 // ── @access  Public
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, requiredRole } = req.body;
 
     // Find user and explicitly include password for comparison
     const user = await User.findOne({ email }).select("+password");
@@ -85,6 +71,16 @@ const login = async (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
+      });
+    }
+
+    // Enforce portal/role restrictions
+    if (requiredRole && user.role !== requiredRole) {
+      return res.status(403).json({
+        success: false,
+        message: requiredRole === "master_hr"
+          ? "Access denied. Only Super HR Admin can login here."
+          : "Access denied. Employees must log in using the Employee Portal.",
       });
     }
 
@@ -147,7 +143,6 @@ const login = async (req, res, next) => {
           mobileNumber: empDetails.mobileNumber,
           department: empDetails.department,
           designation: empDetails.designation,
-          joinDate: empDetails.joinDate,
           profilePhoto: empDetails.profilePhoto,
           status: empDetails.status,
           salary: empDetails.salary,
@@ -190,7 +185,6 @@ const getProfile = async (req, res, next) => {
           mobileNumber: employeeDetails.mobileNumber,
           department: employeeDetails.department,
           designation: employeeDetails.designation,
-          joinDate: employeeDetails.joinDate,
           profilePhoto: employeeDetails.profilePhoto,
           status: employeeDetails.status,
           salary: employeeDetails.salary,
