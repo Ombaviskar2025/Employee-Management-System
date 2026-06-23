@@ -1,16 +1,12 @@
 /**
  * LoginPage.jsx
- * Authentication login page.
- * HR Connect Midnight Indigo design — glassmorphism card, glowing background.
+ * Authentication login page with Tailwind CSS, Plus Jakarta Sans, and glassmorphism.
  */
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
-import { loginUser } from "../redux/slices/authSlice";
-import { selectIsAuthenticated } from "../redux/slices/authSlice";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, selectIsAuthenticated } from "../redux/slices/authSlice";
 import { validateLoginForm } from "../utils/validators";
 
 const LoginPage = () => {
@@ -52,125 +48,130 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="auth-page">
-      {/* Background blobs */}
-      <div className="auth-blob auth-blob--1" />
-      <div className="auth-blob auth-blob--2" />
+    <div className="min-h-screen flex flex-col justify-between overflow-hidden relative" style={{ backgroundColor: "#0d0d15", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      {/* Dynamic Background Elements */}
+      <div className="mesh-blob bg-secondary-container top-[-10%] left-[-10%]"></div>
+      <div className="mesh-blob bg-primary-container bottom-[-10%] right-[-10%]" style={{ animationDelay: "-5s" }}></div>
+      <div className="mesh-blob bg-tertiary-container top-[30%] left-[30%]" style={{ width: "400px", height: "400px", opacity: 0.2 }}></div>
 
-      <div className="auth-card">
-        {/* Logo */}
-        <div className="auth-logo">
-          <div className="auth-logo__icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/>
-              <rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" opacity="0.6"/>
-              <rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.6"/>
-              <rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" opacity="0.9"/>
-            </svg>
+      {/* Top Navigation */}
+      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-container-padding-mobile md:px-container-padding-desktop py-4 bg-surface/30 backdrop-blur-xl border-b border-white/10 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 primary-gradient rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+            <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>grid_view</span>
           </div>
-          <div>
-            <h1 className="auth-logo__title">HR Connect</h1>
-            <p className="auth-logo__sub">Employee Portal</p>
+          <span className="font-headline-md text-headline-md font-bold tracking-tight text-on-surface">HR Connect</span>
+        </div>
+      </header>
+
+      <main className="relative z-10 flex-grow flex items-center justify-center px-container-padding-mobile pt-24 pb-12">
+        <div className="glass-card w-full max-w-[480px] p-8 md:p-12 rounded-xl flex flex-col gap-8 transition-all duration-500 hover:scale-[1.01]">
+          {/* Logo and Header */}
+          <div className="flex flex-col items-center text-center gap-2">
+            <div className="w-16 h-16 primary-gradient rounded-2xl flex items-center justify-center mb-4 shadow-2xl shadow-primary/30 group">
+              <span className="material-symbols-outlined text-white text-3xl group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>grid_view</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Employee Sign In</h1>
+              <span className="text-3xl animate-bounce" style={{ animationDuration: "2s" }}>👋</span>
+            </div>
+            <p className="font-body-md text-body-md text-on-surface-variant max-w-[280px]">
+              Sign in to your employee account to continue
+            </p>
+          </div>
+
+          {/* Sign In Form */}
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit} noValidate>
+            {/* Email Field */}
+            <div className="flex flex-col gap-2">
+              <label className="font-label-md text-label-md text-outline uppercase tracking-widest pl-1" htmlFor="login-email">Email Address</label>
+              <div className={`input-glow flex items-center gap-3 px-5 py-4 bg-white/5 border ${errors.email ? "border-red-500" : "border-white/10"} rounded-full transition-all group`}>
+                <span className="material-symbols-outlined text-on-surface-variant group-focus-within:text-primary transition-colors">mail</span>
+                <input
+                  id="login-email"
+                  name="email"
+                  type="email"
+                  className="bg-transparent border-none p-0 w-full text-on-surface placeholder-on-surface-variant/40 focus:ring-0 font-body-md text-body-md"
+                  placeholder="Demo@gmail.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              {errors.email && (
+                <span className="text-red-400 text-xs pl-4">{errors.email}</span>
+              )}
+            </div>
+
+            {/* Password Field */}
+            <div className="flex flex-col gap-2">
+              <label className="font-label-md text-label-md text-outline uppercase tracking-widest pl-1" htmlFor="login-password">Password</label>
+              <div className={`input-glow flex items-center gap-3 px-5 py-4 bg-white/5 border ${errors.password ? "border-red-500" : "border-white/10"} rounded-full transition-all group relative`}>
+                <span className="material-symbols-outlined text-on-surface-variant group-focus-within:text-primary transition-colors">lock</span>
+                <input
+                  id="login-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="bg-transparent border-none p-0 w-full text-on-surface placeholder-on-surface-variant/40 focus:ring-0 font-body-md text-body-md"
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  className="absolute right-5 flex items-center text-on-surface-variant hover:text-on-surface transition-colors"
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                >
+                  <span className="material-symbols-outlined">
+                    {showPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
+              </div>
+              {errors.password && (
+                <span className="text-red-400 text-xs pl-4">{errors.password}</span>
+              )}
+              <div className="flex justify-end">
+                <Link className="font-label-md text-label-md text-secondary hover:text-primary transition-colors" to="/forgot-password">Forgot Password?</Link>
+              </div>
+            </div>
+
+            {/* Primary Action */}
+            <button
+              className="primary-gradient w-full py-5 rounded-full font-headline-md text-headline-md text-white shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all relative overflow-hidden group"
+              id="submitBtn"
+              type="submit"
+              disabled={loading}
+            >
+              <span className={`relative z-10 ${loading ? "opacity-0" : ""}`} id="btnText">Sign In</span>
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/10" id="btnLoader">
+                  <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                </div>
+              )}
+              <div className="shimmer absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </button>
+          </form>
+
+          {/* Secondary Links */}
+          <div className="flex flex-col items-center gap-4 border-t border-white/5 pt-8">
+            <div className="flex items-center gap-2 font-body-md text-body-md text-on-surface-variant">
+              <span>Don't have an account?</span>
+              <Link className="text-secondary font-bold hover:underline transition-all" to="/register">Register here</Link>
+            </div>
+            <div className="flex items-center gap-2 font-body-md text-body-md text-on-surface-variant/80">
+              <span>Are you a Super HR Admin?</span>
+              <Link className="text-on-secondary-container font-bold hover:underline decoration-dotted transition-all" to="/super-hr-login">Super HR Portal</Link>
+            </div>
           </div>
         </div>
+      </main>
 
-        <h2 className="auth-title">Employee Sign In 👋</h2>
-        <p className="auth-desc">Sign in to your employee account to continue</p>
-
-        <form onSubmit={handleSubmit} noValidate className="auth-form">
-          {/* Email */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="login-email">
-              Email Address
-            </label>
-            <div className="input-icon-wrap">
-              <FiMail className="input-icon" size={15} />
-              <input
-                id="login-email"
-                name="email"
-                type="email"
-                className={`form-input form-input--icon ${errors.email ? "form-input--error" : ""}`}
-                placeholder="Demo@gmail.com"
-                value={form.email}
-                onChange={handleChange}
-                autoComplete="email"
-                autoFocus
-              />
-            </div>
-            {errors.email && (
-              <span className="form-error">{errors.email}</span>
-            )}
-          </div>
-
-          {/* Password */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="login-password">
-              Password
-            </label>
-            <div className="input-icon-wrap">
-              <FiLock className="input-icon" size={15} />
-              <input
-                id="login-password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                className={`form-input form-input--icon form-input--icon-r ${errors.password ? "form-input--error" : ""}`}
-                placeholder="••••••••"
-                value={form.password}
-                onChange={handleChange}
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                className="input-icon-right"
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <FiEyeOff size={15} /> : <FiEye size={15} />}
-              </button>
-            </div>
-            {errors.password && (
-              <span className="form-error">{errors.password}</span>
-            )}
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "16px" }}>
-            <Link to="/forgot-password" style={{ color: "#6366f1", fontSize: "14px", textDecoration: "none" }}>
-              Forgot Password?
-            </Link>
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn--primary btn--full btn--lg"
-            disabled={loading}
-            id="login-submit-btn"
-            style={{ marginTop: "4px" }}
-          >
-            {loading ? (
-              <>
-                <span className="btn-spinner" />
-                Signing in...
-              </>
-            ) : (
-              "Sign In"
-            )}
-          </button>
-        </form>
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", display: "block", marginBottom: "8px" }}>
-            Don't have an account?{" "}
-            <Link to="/register" style={{ color: "#6366f1", fontWeight: "600", textDecoration: "none" }}>
-              Register here
-            </Link>
-          </span>
-          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>
-            Are you a Super HR Admin?{" "}
-            <Link to="/super-hr-login" style={{ color: "#a855f7", fontWeight: "600", textDecoration: "none", borderBottom: "1px dashed #a855f7", paddingBottom: "2px" }}>
-              Super HR Portal
-            </Link>
-          </span>
-        </div>
-      </div>
+      {/* Footer Shell */}
+      <footer className="w-full py-8 flex flex-col items-center gap-4 mt-auto relative z-10">
+        <p className="font-label-md text-label-md uppercase tracking-widest text-outline">HR CONNECT PORTAL</p>
+        <p className="font-label-md text-label-md text-on-surface-variant/60">© 2026 HR Connect Portal</p>
+      </footer>
     </div>
   );
 };

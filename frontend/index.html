@@ -8,6 +8,151 @@
     <meta property="og:title" content="EMS Pro — Employee Management System" />
     <meta property="og:description" content="Production-ready HR Dashboard with MERN Stack" />
     <title>EMS Pro — Employee Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+      tailwind.config = {
+        corePlugins: {
+          preflight: false, // Prevent Tailwind from resetting existing custom styles
+        },
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "on-secondary-container": "#d6a9ff",
+              "surface-container": "#1f1f27",
+              "on-tertiary-container": "#452000",
+              "error-container": "#93000a",
+              "surface-container-lowest": "#0d0d15",
+              "on-primary-fixed": "#07006c",
+              "inverse-primary": "#494bd6",
+              "surface-dim": "#13131b",
+              "inverse-on-surface": "#303038",
+              "on-error-container": "#ffdad6",
+              "on-tertiary": "#4f2500",
+              "tertiary-container": "#d97721",
+              "primary-container": "#8083ff",
+              "on-background": "#e4e1ed",
+              "on-surface-variant": "#c7c4d7",
+              "secondary-container": "#6f00be",
+              "inverse-surface": "#e4e1ed",
+              "on-primary-container": "#0d0096",
+              "primary": "#c0c1ff",
+              "outline-variant": "#464554",
+              "surface-tint": "#c0c1ff",
+              "on-secondary-fixed-variant": "#6900b3",
+              "on-secondary": "#490080",
+              "surface-container-high": "#292932",
+              "tertiary-fixed-dim": "#ffb783",
+              "surface-variant": "#34343d",
+              "surface-bright": "#393841",
+              "primary-fixed-dim": "#c0c1ff",
+              "on-error": "#690005",
+              "on-primary": "#1000a9",
+              "tertiary-fixed": "#ffdcc5",
+              "secondary": "#ddb7ff",
+              "secondary-fixed-dim": "#ddb7ff",
+              "surface-container-low": "#1b1b23",
+              "on-surface": "#e4e1ed",
+              "on-primary-fixed-variant": "#2f2ebe",
+              "primary-fixed": "#e1e0ff",
+              "surface-container-highest": "#34343d",
+              "error": "#ffb4ab",
+              "on-tertiary-fixed": "#301400",
+              "tertiary": "#ffb783",
+              "outline": "#908fa0",
+              "surface": "#13131b",
+              "on-tertiary-fixed-variant": "#703700",
+              "background": "#13131b",
+              "secondary-fixed": "#f0dbff",
+              "on-secondary-fixed": "#2c0051"
+            },
+            "borderRadius": {
+              "DEFAULT": "1rem",
+              "lg": "2rem",
+              "xl": "3rem",
+              "full": "9999px"
+            },
+            "spacing": {
+              "element-gap-relaxed": "32px",
+              "container-padding-mobile": "20px",
+              "container-padding-desktop": "40px",
+              "unit": "8px",
+              "section-gap": "80px",
+              "gutter": "24px"
+            },
+            "fontFamily": {
+              "headline-lg": ["Plus Jakarta Sans"],
+              "headline-md": ["Plus Jakarta Sans"],
+              "headline-lg-mobile": ["Plus Jakarta Sans"],
+              "display-lg": ["Plus Jakarta Sans"],
+              "body-md": ["Plus Jakarta Sans"],
+              "body-lg": ["Plus Jakarta Sans"],
+              "label-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+              "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+              "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "700"}],
+              "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "700"}],
+              "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+              "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+              "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+              "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      .mesh-blob {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        filter: blur(120px);
+        z-index: 0;
+        opacity: 0.4;
+        animation: move 20s infinite alternate;
+      }
+
+      @keyframes move {
+        0% { transform: translate(-10%, -10%) scale(1); }
+        100% { transform: translate(20%, 10%) scale(1.2); }
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      }
+
+      .primary-gradient {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      }
+
+      .input-glow:focus-within {
+        box-shadow: 0 0 15px rgba(192, 193, 255, 0.2);
+        border-color: rgba(192, 193, 255, 0.5);
+      }
+
+      .shimmer {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
