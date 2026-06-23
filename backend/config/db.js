@@ -23,7 +23,7 @@ const connectDB = async () => {
     const password = process.env.MASTER_HR_PASSWORD || "admin123";
     const name = "Master HR";
 
-    let masterHR = await User.findOne({ role: "master_hr" });
+    let masterHR = await User.findOne({ role: "master_hr" }).select("+password");
     if (!masterHR) {
       // Check if email exists
       const emailExists = await User.findOne({ email });
