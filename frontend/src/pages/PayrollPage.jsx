@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { jsPDF } from "jspdf";
 import { fetchPayroll, updatePayrollStatus, processAllPayroll, fetchMyPayroll } from "../redux/slices/payrollSlice";
 import { selectUser } from "../redux/slices/authSlice";
 import { FiDollarSign, FiCheckCircle, FiClock, FiActivity, FiPrinter } from "react-icons/fi";
@@ -55,6 +56,73 @@ const PayrollPage = () => {
       }
     });
   }
+
+  const handleDownloadPDF = (payslip) => {
+    const doc = new jsPDF();
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.text("HR Connect Enterprise", 20, 25);
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text(`Salary Slip - ${payslip.month}`, 20, 32);
+    
+    doc.setDrawColor(200);
+    doc.line(20, 37, 190, 37);
+    
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(50);
+    doc.text("Employee Details", 20, 47);
+    
+    doc.setFont("helvetica", "normal");
+    doc.text(`Name: ${user?.fullName || user?.name || "Employee"}`, 20, 55);
+    doc.text(`Email: ${user?.email || ""}`, 20, 62);
+    doc.text(`Department: ${user?.department || "-"}`, 20, 69);
+    doc.text(`Designation: ${user?.designation || "-"}`, 20, 76);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Salary Breakdown", 20, 91);
+    
+    doc.setFont("helvetica", "normal");
+    doc.rect(20, 96, 170, 60);
+    
+    doc.text("Description", 25, 103);
+    doc.text("Amount", 145, 103);
+    doc.line(20, 106, 190, 106);
+    
+    doc.text("Basic Salary", 25, 113);
+    doc.text(`$${payslip.basicSalary.toLocaleString()}`, 145, 113);
+    
+    doc.text("House Rent Allowance (HRA)", 25, 120);
+    doc.text(`$${(payslip.hra || 0).toLocaleString()}`, 145, 120);
+    
+    doc.text("Allowances", 25, 127);
+    doc.text(`$${payslip.allowances.toLocaleString()}`, 145, 127);
+    
+    doc.text("Deductions", 25, 134);
+    doc.text(`-$${payslip.deductions.toLocaleString()}`, 145, 134);
+    
+    doc.text("Taxes", 25, 141);
+    doc.text(`-$${(payslip.tax || 0).toLocaleString()}`, 145, 141);
+    
+    doc.line(20, 146, 190, 146);
+    
+    doc.setFont("helvetica", "bold");
+    doc.text("Net Pay (Received)", 25, 152);
+    doc.text(`$${payslip.netSalary.toLocaleString()}`, 145, 152);
+    
+    doc.setFont("helvetica", "normal");
+    doc.text(`Payment Status: ${payslip.status}`, 20, 170);
+    doc.text(`Generated Date: ${new Date(payslip.createdAt || Date.now()).toLocaleDateString()}`, 20, 177);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(150);
+    doc.text("This is an electronically generated payslip and requires no signature.", 20, 200);
+    
+    doc.save(`Payslip-${(user?.fullName || user?.name || "Employee").replace(/\s+/g, "_")}-${payslip.month.replace(/\s+/g, "_")}.pdf`);
+  };
 
   const handlePrint = () => {
     window.print();
@@ -160,12 +228,30 @@ const PayrollPage = () => {
                       <span>Basic Salary</span>
                       <span>${selectedPayslip.basicSalary.toLocaleString()}</span>
                     </div>
+                    {selectedPayslip.hra !== undefined && (
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span>HRA (House Rent)</span>
+                        <span>+${selectedPayslip.hra.toLocaleString()}</span>
+                      </div>
+                    )}
                     <div style={{ display: "flex", justifyContent: "space-between", color: "#10b981" }}>
-                      <span>Allowances (Housing & Travel)</span>
+                      <span>Allowances</span>
                       <span>+${selectedPayslip.allowances.toLocaleString()}</span>
                     </div>
+                    {selectedPayslip.grossSalary !== undefined && (
+                      <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px dashed rgba(255,255,255,0.1)", paddingTop: "6px", fontWeight: "600" }}>
+                        <span>Gross Salary</span>
+                        <span>${selectedPayslip.grossSalary.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {selectedPayslip.tax !== undefined && (
+                      <div style={{ display: "flex", justifyContent: "space-between", color: "#ef4444" }}>
+                        <span>Taxes (10%)</span>
+                        <span>-${selectedPayslip.tax.toLocaleString()}</span>
+                      </div>
+                    )}
                     <div style={{ display: "flex", justifyContent: "space-between", color: "#ef4444" }}>
-                      <span>Deductions (Taxes)</span>
+                      <span>Deductions</span>
                       <span>-${selectedPayslip.deductions.toLocaleString()}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "10px", fontWeight: "700", fontSize: "16px" }}>
@@ -189,8 +275,11 @@ const PayrollPage = () => {
                 <button className="btn" style={{ background: "#374151" }} onClick={() => setSelectedPayslip(null)}>
                   Close
                 </button>
-                <button className="btn btn--primary" onClick={handlePrint}>
-                  <FiPrinter style={{ marginRight: "6px" }} /> Print Payslip
+                <button className="btn btn--primary" onClick={() => handleDownloadPDF(selectedPayslip)}>
+                  Download PDF
+                </button>
+                <button className="btn" style={{ background: "var(--clr-primary, #6366f1)", color: "white" }} onClick={handlePrint}>
+                  <FiPrinter style={{ marginRight: "6px" }} /> Print
                 </button>
               </div>
             </div>

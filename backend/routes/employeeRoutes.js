@@ -16,14 +16,21 @@ const {
   getStats,
   approveEmployee,
   rejectEmployee,
+  getMyDepartmentColleagues,
 } = require("../controllers/employeeController");
 
 const { protect, authorize } = require("../middleware/auth");
 const { validateEmployee } = require("../middleware/validate");
 
-// All routes require authentication and Master HR authorization
+// All routes require authentication
 router.use(protect);
+
+// Allow employees to fetch colleagues from their department
+router.get("/my-department", getMyDepartmentColleagues);
+
+// Require Master HR authorization for the rest
 router.use(authorize("master_hr"));
+
 
 // Dashboard stats — place before :id param route to avoid conflict
 router.get("/stats", getStats);

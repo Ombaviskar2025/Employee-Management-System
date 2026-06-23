@@ -56,6 +56,12 @@ const employeeService = {
     const response = await api.put(`/employees/${id}/reject`);
     return response.data;
   },
+
+  /** Get colleagues in the same department for current employee */
+  getMyDepartmentColleagues: async () => {
+    const response = await api.get("/employees/my-department");
+    return response.data;
+  },
 };
 
 export default employeeService;

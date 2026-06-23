@@ -88,6 +88,18 @@ const employeeSchema = new mongoose.Schema(
       type: String,
       default: "employee",
     },
+    annualLeaves: {
+      type: Number,
+      default: 12,
+    },
+    sickLeaves: {
+      type: Number,
+      default: 6,
+    },
+    casualLeaves: {
+      type: Number,
+      default: 6,
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt
@@ -121,6 +133,32 @@ employeeSchema.index({
 // Ensure virtuals appear in JSON
 employeeSchema.set("toJSON", { virtuals: true });
 employeeSchema.set("toObject", { virtuals: true });
+
+// Database indexes for performance
+employeeSchema.index({ email: 1 });
+employeeSchema.index({ department: 1 });
+employeeSchema.index({ status: 1 });
+employeeSchema.index({ createdAt: -1 });
+
+// Cache invalidation hooks
+const clearEmployeeCache = () => {
+  try {
+    const cache = require("../utils/cache");
+    const keys = cache.keys();
+    const employeeKeys = keys.filter(k => k.startsWith("employees_"));
+    if (employeeKeys.length > 0) {
+      cache.del(employeeKeys);
+    }
+  } catch (err) {
+    console.error("Error clearing cache in Employee model hook:", err);
+  }
+};
+
+employeeSchema.post("save", clearEmployeeCache);
+employeeSchema.post("updateOne", clearEmployeeCache);
+employeeSchema.post("deleteOne", clearEmployeeCache);
+employeeSchema.post("findOneAndDelete", clearEmployeeCache);
+employeeSchema.post("findOneAndUpdate", clearEmployeeCache);
 
 const Employee = mongoose.model("Employee", employeeSchema);
 

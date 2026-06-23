@@ -23,6 +23,19 @@ export const fetchEmployees = createAsyncThunk(
   }
 );
 
+export const fetchMyDepartment = createAsyncThunk(
+  "employees/fetchMyDepartment",
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await employeeService.getMyDepartmentColleagues();
+      return data;
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to fetch department colleagues.";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const fetchEmployee = createAsyncThunk(
   "employees/fetchOne",
   async (id, { rejectWithValue }) => {
@@ -164,6 +177,22 @@ const employeeSlice = createSlice({
         state.pagination = action.payload.pagination;
       })
       .addCase(fetchEmployees.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
+      });
+
+    // ── Fetch My Department ──────────────────────────────────────────────────
+    builder
+      .addCase(fetchMyDepartment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMyDepartment.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employees = action.payload.data;
+      })
+      .addCase(fetchMyDepartment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         toast.error(action.payload);

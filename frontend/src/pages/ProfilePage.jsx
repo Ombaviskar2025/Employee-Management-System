@@ -7,7 +7,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile, updateUserProfile, updateUserPassword, selectUser, selectAuthLoading } from "../redux/slices/authSlice";
-import { fetchEmployees, selectEmployees } from "../redux/slices/employeeSlice";
+import { fetchMyDepartment, selectEmployees } from "../redux/slices/employeeSlice";
 import { FiUser, FiMail, FiPhone, FiCalendar, FiBriefcase, FiLock, FiCheckCircle, FiUsers, FiShield } from "react-icons/fi";
 import LoadingSpinner from "../components/LoadingSpinner";
 import toast from "react-hot-toast";
@@ -41,13 +41,15 @@ const ProfilePage = () => {
       setFullName(user.fullName || user.name || "");
       setMobileNumber(user.mobileNumber || "");
       setProfilePhoto(user.profilePhoto || "");
-
-      // If user is employee, load other members in their department
-      if (user.role === "employee" && user.department) {
-        dispatch(fetchEmployees({ department: user.department, limit: 100 }));
-      }
     }
-  }, [user, dispatch]);
+  }, [user]);
+
+  // Load department colleagues only when employee selects "My Department" tab
+  useEffect(() => {
+    if (user && user.role === "employee" && activeTab === "department") {
+      dispatch(fetchMyDepartment());
+    }
+  }, [user, activeTab, dispatch]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();

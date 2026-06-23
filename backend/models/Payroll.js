@@ -15,11 +15,23 @@ const payrollSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    hra: {
+      type: Number,
+      default: 0,
+    },
     allowances: {
       type: Number,
       default: 0,
     },
     deductions: {
+      type: Number,
+      default: 0,
+    },
+    tax: {
+      type: Number,
+      default: 0,
+    },
+    grossSalary: {
       type: Number,
       default: 0,
     },

@@ -31,6 +31,13 @@ const getEmployees = async (req, res, next) => {
       status,
     } = req.query;
 
+    const cacheKey = `employees_${search}_${page}_${limit}_${sortBy}_${order}_${department || ""}_${status || ""}`;
+    const cache = require("../utils/cache");
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      return res.status(200).json(cachedData);
+    }
+
     // ── Build filter object ─────────────────────────────────────────────────
     const filter = {};
 
@@ -79,7 +86,7 @@ const getEmployees = async (req, res, next) => {
 
     const totalPages = Math.ceil(total / limitNum);
 
-    res.status(200).json({
+    const responseData = {
       success: true,
       data: employees,
       pagination: {
@@ -90,7 +97,10 @@ const getEmployees = async (req, res, next) => {
         hasNextPage: pageNum < totalPages,
         hasPrevPage: pageNum > 1,
       },
-    });
+    };
+
+    cache.set(cacheKey, responseData);
+    res.status(200).json(responseData);
   } catch (error) {
     next(error);
   }
@@ -249,19 +259,28 @@ const deleteEmployee = async (req, res, next) => {
   }
 };
 
-// ── @desc    Get department stats for dashboard
-// ── @route   GET /api/employees/stats
-// ── @access  Private
 const getStats = async (req, res, next) => {
   try {
+    const today = new Date().toISOString().split("T")[0];
+    const Attendance = require("../models/Attendance");
+    const Leave = require("../models/Leave");
+
     const [
       totalEmployees,
       activeEmployees,
+      onLeave,
+      presentToday,
+      pendingLeaves,
+      pendingRegistrations,
       departmentStats,
       recentEmployees,
     ] = await Promise.all([
       Employee.countDocuments(),
       Employee.countDocuments({ status: "active" }),
+      Employee.countDocuments({ status: "on-leave" }),
+      Attendance.countDocuments({ date: today, status: { $in: ["Present", "Late", "Half-Day"] } }),
+      Leave.countDocuments({ status: "Pending" }),
+      Employee.countDocuments({ status: "pending" }),
       Employee.aggregate([
         { $group: { _id: "$department", count: { $sum: 1 } } },
         { $sort: { count: -1 } },
@@ -278,7 +297,9 @@ const getStats = async (req, res, next) => {
       data: {
         totalEmployees,
         activeEmployees,
-        inactiveEmployees: totalEmployees - activeEmployees,
+        onLeave,
+        presentToday,
+        pendingRequests: pendingLeaves + pendingRegistrations,
         departmentStats,
         recentEmployees,
       },
@@ -336,6 +357,42 @@ const rejectEmployee = async (req, res, next) => {
   }
 };
 
+// ── @desc    Get employees in current user's department (excluding sensitive fields)
+// ── @route   GET /api/employees/my-department
+// ── @access  Private (Employee or HR)
+const getMyDepartmentColleagues = async (req, res, next) => {
+  try {
+    const currentEmployee = await Employee.findOne({ email: req.user.email });
+    if (!currentEmployee) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee profile not found for current user",
+      });
+    }
+
+    if (!currentEmployee.department) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+      });
+    }
+
+    const colleagues = await Employee.find({
+      department: currentEmployee.department,
+      status: "active",
+    })
+      .select("fullName designation email status profilePhoto")
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      data: colleagues,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getEmployees,
   getEmployee,
@@ -345,4 +402,6 @@ module.exports = {
   getStats,
   approveEmployee,
   rejectEmployee,
+  getMyDepartmentColleagues,
 };
+

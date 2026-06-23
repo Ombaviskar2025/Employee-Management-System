@@ -6,7 +6,7 @@
 const crypto = require("crypto");
 const User = require("../models/User");
 const Employee = require("../models/Employee");
-const generateToken = require("../utils/generateToken");
+const { sendTokenResponse } = require("../utils/tokenService");
 
 // ── @desc    Register a new employee
 // ── @route   POST /api/auth/register
@@ -122,23 +122,13 @@ const login = async (req, res, next) => {
       });
     }
 
-    const token = generateToken(user._id);
-
     // Merge employee details if applicable
-    let responseData = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      createdAt: user.createdAt,
-      token,
-    };
+    let responseData = {};
 
     if (user.role === "employee") {
       const empDetails = await Employee.findOne({ email: user.email }).lean();
       if (empDetails) {
         responseData = {
-          ...responseData,
           fullName: empDetails.fullName,
           mobileNumber: empDetails.mobileNumber,
           department: empDetails.department,
@@ -146,17 +136,17 @@ const login = async (req, res, next) => {
           profilePhoto: empDetails.profilePhoto,
           status: empDetails.status,
           salary: empDetails.salary,
+          annualLeaves: empDetails.annualLeaves !== undefined ? empDetails.annualLeaves : 12,
+          sickLeaves: empDetails.sickLeaves !== undefined ? empDetails.sickLeaves : 6,
+          casualLeaves: empDetails.casualLeaves !== undefined ? empDetails.casualLeaves : 6,
           _id: empDetails._id, // Consistent ID matching
           userId: user._id,
         };
       }
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      data: responseData,
-    });
+    // Send accessToken in JSON and refreshToken in HTTP-only cookie
+    sendTokenResponse(user, 200, res, responseData);
   } catch (error) {
     next(error);
   }
@@ -188,6 +178,9 @@ const getProfile = async (req, res, next) => {
           profilePhoto: employeeDetails.profilePhoto,
           status: employeeDetails.status,
           salary: employeeDetails.salary,
+          annualLeaves: employeeDetails.annualLeaves !== undefined ? employeeDetails.annualLeaves : 12,
+          sickLeaves: employeeDetails.sickLeaves !== undefined ? employeeDetails.sickLeaves : 6,
+          casualLeaves: employeeDetails.casualLeaves !== undefined ? employeeDetails.casualLeaves : 6,
           _id: employeeDetails._id,
           userId: user._id,
         };
@@ -369,4 +362,52 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, getProfile, updateProfile, updatePassword, forgotPassword, resetPassword };
+// ── @desc    Refresh access token using HTTP-only cookie
+// ── @route   POST /api/auth/refresh
+// ── @access  Public
+const refresh = async (req, res, next) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({ success: false, message: "No refresh token provided" });
+    }
+
+    const jwt = require("jsonwebtoken");
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET || "refresh_secret_key");
+
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User no longer exists" });
+    }
+
+    const { generateAccessToken } = require("../utils/tokenService");
+    const accessToken = generateAccessToken(user._id);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        token: accessToken,
+      },
+    });
+  } catch (error) {
+    res.status(401).json({ success: false, message: "Invalid or expired refresh token" });
+  }
+};
+
+// ── @desc    Log user out / Clear HTTP-only cookie
+// ── @route   POST /api/auth/logout
+// ── @access  Private
+const logout = async (req, res, next) => {
+  try {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, login, getProfile, updateProfile, updatePassword, forgotPassword, resetPassword, refresh, logout };

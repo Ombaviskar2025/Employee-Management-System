@@ -51,7 +51,7 @@ const LeavePage = () => {
 
   return (
     <div className="page-container">
-      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <div>
           <h1 className="page-title">Leave Management</h1>
           <p className="page-desc">{isHR ? "Review and approve leave applications" : "Apply for leaves and track approval status"}</p>
@@ -62,6 +62,29 @@ const LeavePage = () => {
           </button>
         )}
       </div>
+
+      {!isHR && user && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+          <div className="card" style={{ padding: "16px", textAlign: "center" }}>
+            <div style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Annual Leaves Left</div>
+            <div style={{ fontSize: "28px", fontWeight: "700", color: "#6366f1", marginTop: "8px" }}>
+              {user.annualLeaves !== undefined ? user.annualLeaves : 12}
+            </div>
+          </div>
+          <div className="card" style={{ padding: "16px", textAlign: "center" }}>
+            <div style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Sick Leaves Left</div>
+            <div style={{ fontSize: "28px", fontWeight: "700", color: "#10b981", marginTop: "8px" }}>
+              {user.sickLeaves !== undefined ? user.sickLeaves : 6}
+            </div>
+          </div>
+          <div className="card" style={{ padding: "16px", textAlign: "center" }}>
+            <div style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Casual Leaves Left</div>
+            <div style={{ fontSize: "28px", fontWeight: "700", color: "#f59e0b", marginTop: "8px" }}>
+              {user.casualLeaves !== undefined ? user.casualLeaves : 6}
+            </div>
+          </div>
+        </div>
+      )}
 
       {showApplyModal && (
         <div className="modal-overlay">

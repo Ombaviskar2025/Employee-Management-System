@@ -16,18 +16,23 @@ const getPayrollRecords = async (req, res, next) => {
     for (const emp of employees) {
       let record = await Payroll.findOne({ employeeId: emp._id, month });
       if (!record) {
-        // Create initial record
         const basicSalary = emp.salary || 0;
-        const allowances = Math.round(basicSalary * 0.10); // Default 10%
-        const deductions = Math.round(basicSalary * 0.05); // Default 5%
-        const netSalary = basicSalary + allowances - deductions;
+        const hra = Math.round(basicSalary * 0.15); // Default 15% HRA
+        const allowances = Math.round(basicSalary * 0.10); // Default 10% Allowances
+        const grossSalary = basicSalary + hra + allowances;
+        const tax = Math.round(grossSalary * 0.10); // Default 10% Tax
+        const deductions = Math.round(basicSalary * 0.05); // Default 5% Deductions
+        const netSalary = grossSalary - deductions - tax;
         
         record = await Payroll.create({
           employeeId: emp._id,
           month,
           basicSalary,
+          hra,
           allowances,
           deductions,
+          tax,
+          grossSalary,
           netSalary,
           status: "Pending",
         });
@@ -60,6 +65,25 @@ const updatePayrollStatus = async (req, res, next) => {
 
     record.status = status;
     await record.save();
+
+    // Trigger Notification for employee
+    try {
+      const User = require("../models/User");
+      const { triggerNotification } = require("./notificationController");
+      if (record.employeeId) {
+        const employeeUser = await User.findOne({ email: record.employeeId.email });
+        if (employeeUser) {
+          await triggerNotification(
+            employeeUser._id,
+            `Payslip Status: ${status}`,
+            `Your payslip for ${record.month} has been set to ${status}. Net Pay: $${record.netSalary.toLocaleString()}`,
+            "payroll"
+          );
+        }
+      }
+    } catch (notifError) {
+      console.error("Payroll notification error:", notifError);
+    }
 
     await logAction(req.user._id, "UPDATE_PAYROLL_STATUS", `Updated payroll status to ${status} for ${record.employeeId ? record.employeeId.email : "unknown"} (${record.month})`, req);
 
@@ -100,9 +124,39 @@ const getMyPayroll = async (req, res, next) => {
   }
 };
 
+const updatePayroll = async (req, res, next) => {
+  try {
+    const { basicSalary, hra, allowances, deductions } = req.body;
+
+    const record = await Payroll.findById(req.params.id);
+    if (!record) {
+      return res.status(404).json({ success: false, message: "Payroll record not found" });
+    }
+
+    if (basicSalary !== undefined) record.basicSalary = basicSalary;
+    if (hra !== undefined) record.hra = hra;
+    if (allowances !== undefined) record.allowances = allowances;
+    if (deductions !== undefined) record.deductions = deductions;
+
+    // Recalculate gross, tax, and net
+    record.grossSalary = record.basicSalary + record.hra + record.allowances;
+    record.tax = Math.round(record.grossSalary * 0.10); // 10% default tax
+    record.netSalary = record.grossSalary - record.deductions - record.tax;
+
+    await record.save();
+
+    await logAction(req.user._id, "UPDATE_PAYROLL_VALUES", `Updated payroll values for record ${record._id}`, req);
+
+    res.status(200).json({ success: true, message: "Payroll values updated successfully", data: record });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getPayrollRecords,
   updatePayrollStatus,
   processAllPayroll,
   getMyPayroll,
+  updatePayroll,
 };

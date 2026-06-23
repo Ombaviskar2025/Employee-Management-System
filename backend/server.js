@@ -10,6 +10,10 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const helmet = require("helmet");
+const compression = require("compression");
+const cookieParser = require("cookie-parser");
+const rateLimit = require("express-rate-limit");
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
@@ -21,12 +25,35 @@ const recruitmentRoutes = require("./routes/recruitmentRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const auditLogRoutes = require("./routes/auditLogRoutes");
 const payrollRoutes = require("./routes/payrollRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
 
 // ── Connect to MongoDB ────────────────────────────────────────────────────────
 connectDB();
 
 const app = express();
+
+// Secure Express headers
+app.use(helmet());
+
+// Compress API responses
+app.use(compression());
+
+// Parse cookies (needed for HTTP-only refresh tokens)
+app.use(cookieParser());
+
+// Rate limit login route (max 5 requests per 15 minutes)
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    success: false,
+    message: "Too many login attempts. Please try again after 15 minutes."
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/api/auth/login", loginLimiter);
 
 // ── Global Middleware ─────────────────────────────────────────────────────────
 
@@ -88,6 +115,7 @@ app.use("/api/recruitment", recruitmentRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/audit-logs", auditLogRoutes);
 app.use("/api/payroll", payrollRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // ── 404 Handler ───────────────────────────────────────────────────────────────
 app.use(notFound);

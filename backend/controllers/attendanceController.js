@@ -18,10 +18,10 @@ const checkIn = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "You have already checked in today" });
     }
 
-    // Check if late (e.g. after 09:15 AM)
+    // Check if late (e.g. after 09:30 AM)
     const checkInTime = new Date();
     const limitTime = new Date();
-    limitTime.setHours(9, 15, 0, 0); // 9:15 AM
+    limitTime.setHours(9, 30, 0, 0); // 9:30 AM
     
     const status = checkInTime > limitTime ? "Late" : "Present";
 

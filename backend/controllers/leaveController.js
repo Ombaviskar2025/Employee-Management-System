@@ -70,11 +70,50 @@ const updateLeaveStatus = async (req, res, next) => {
     leave.approvedBy = req.user._id;
     await leave.save();
 
-    // If approved, update Employee status to 'on-leave' if leave is currently active
+    // Trigger Notification for the employee
+    try {
+      const User = require("../models/User");
+      const { triggerNotification } = require("./notificationController");
+      if (leave.employeeId) {
+        const employeeUser = await User.findOne({ email: leave.employeeId.email });
+        if (employeeUser) {
+          await triggerNotification(
+            employeeUser._id,
+            `Leave Request ${status}`,
+            `Your request for ${leave.type} leave (${new Date(leave.startDate).toLocaleDateString()} to ${new Date(leave.endDate).toLocaleDateString()}) has been ${status.toLowerCase()}.`,
+            "leave"
+          );
+        }
+      }
+    } catch (notifError) {
+      console.error("Notification trigger error:", notifError);
+    }
+
+    // If approved, deduct from Employee's leave balance and update status to 'on-leave' if active
     if (status === "Approved" && leave.employeeId) {
-      const today = new Date();
-      if (today >= leave.startDate && today <= leave.endDate) {
-        await Employee.findByIdAndUpdate(leave.employeeId._id, { status: "on-leave" });
+      try {
+        const durationMs = new Date(leave.endDate) - new Date(leave.startDate);
+        const durationDays = Math.ceil(durationMs / (1000 * 60 * 60 * 24)) + 1;
+
+        const emp = await Employee.findById(leave.employeeId._id);
+        if (emp) {
+          const typeLower = leave.type.toLowerCase();
+          if (typeLower.includes("sick")) {
+            emp.sickLeaves = Math.max(0, emp.sickLeaves - durationDays);
+          } else if (typeLower.includes("annual") || typeLower.includes("year") || typeLower.includes("vacation")) {
+            emp.annualLeaves = Math.max(0, emp.annualLeaves - durationDays);
+          } else if (typeLower.includes("casual")) {
+            emp.casualLeaves = Math.max(0, emp.casualLeaves - durationDays);
+          }
+          await emp.save();
+        }
+
+        const today = new Date();
+        if (today >= leave.startDate && today <= leave.endDate) {
+          await Employee.findByIdAndUpdate(leave.employeeId._id, { status: "on-leave" });
+        }
+      } catch (err) {
+        console.error("Error updating leave balances:", err);
       }
     }
 
