@@ -31,6 +31,7 @@ import PerformancePage from "./pages/PerformancePage";
 import SettingsPage from "./pages/SettingsPage";
 import HelpCenterPage from "./pages/HelpCenterPage";
 import ProfilePage from "./pages/ProfilePage";
+import DepartmentsPage from "./pages/DepartmentsPage";
 
 function App() {
   // Initialize dark mode theme globally on mount
@@ -89,6 +90,7 @@ function App() {
             <Route path="/payroll" element={<PayrollPage />} />
             <Route path="/performance" element={<PerformancePage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/departments" element={<DepartmentsPage />} />
             <Route path="/help" element={<HelpCenterPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/announcements" element={<AnnouncementPage />} />

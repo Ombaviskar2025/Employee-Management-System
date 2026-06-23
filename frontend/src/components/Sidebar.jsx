@@ -22,13 +22,15 @@ import {
   FiBell,
   FiBriefcase,
   FiFileText,
-  FiShield
+  FiShield,
+  FiLayers
 } from "react-icons/fi";
 import useAuth from "../hooks/useAuth";
 
 const HR_NAV_ITEMS = [
   { to: "/dashboard", icon: FiHome, label: "Dashboard" },
   { to: "/employees", icon: FiUsers, label: "Employees" },
+  { to: "/departments", icon: FiLayers, label: "Departments" },
   { to: "/registrations", icon: FiCheckSquare, label: "Registrations" },
   { to: "/attendance", icon: FiClock, label: "Attendance" },
   { to: "/leaves", icon: FiCalendar, label: "Leaves" },

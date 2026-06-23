@@ -25,7 +25,8 @@ const DashboardLayout = () => {
     "/registrations",
     "/audit-logs",
     "/recruitment",
-    "/performance"
+    "/performance",
+    "/departments"
   ];
   if (user?.role === "employee" && employeeRestrictedRoutes.includes(location.pathname)) {
     return <Navigate to="/profile" replace />;

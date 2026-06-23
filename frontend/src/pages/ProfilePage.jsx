@@ -19,6 +19,7 @@ const ProfilePage = () => {
   const teamMembers = useSelector(selectEmployees);
 
   const [activeTab, setActiveTab] = useState("personal");
+  const [isHovered, setIsHovered] = useState(false);
 
   // Form State: Personal Details
   const [fullName, setFullName] = useState("");
@@ -51,13 +52,65 @@ const ProfilePage = () => {
     }
   }, [user, activeTab, dispatch]);
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File is too large. Please select an image under 5MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const max_size = 150;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > max_size) {
+            height *= max_size / width;
+            width = max_size;
+          }
+        } else {
+          if (height > max_size) {
+            width *= max_size / height;
+            height = max_size;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.75);
+        setProfilePhoto(compressedBase64);
+        toast.success("Image selected and optimized!");
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     if (!fullName) {
-      toast.error("Full Name is required");
+      toast.error(user?.role === "employee" ? "Full Name is required" : "Name is required");
       return;
     }
-    dispatch(updateUserProfile({ fullName, mobileNumber, profilePhoto }));
+    const payload = user?.role === "employee"
+      ? { fullName, mobileNumber, profilePhoto }
+      : { name: fullName, profilePhoto };
+    dispatch(updateUserProfile(payload));
   };
 
   const handleChangePassword = async (e) => {
@@ -116,7 +169,14 @@ const ProfilePage = () => {
                 background: "linear-gradient(135deg, var(--clr-primary-cta), var(--clr-primary-dark))",
                 border: "2px solid rgba(192, 193, 255, 0.3)",
                 boxShadow: "var(--shadow-primary-glow)",
+                position: "relative",
+                cursor: "pointer",
+                overflow: "hidden",
               }}
+              onClick={() => document.getElementById("profile-file-input").click()}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              title="Click to upload profile photo"
             >
               {profilePhoto ? (
                 <img
@@ -130,7 +190,35 @@ const ProfilePage = () => {
               ) : (
                 fullName.charAt(0).toUpperCase() || "U"
               )}
+              {/* Overlay hover effect */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "rgba(0, 0, 0, 0.65)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  opacity: isHovered ? 1 : 0,
+                  transition: "opacity 0.2s ease-in-out",
+                  borderRadius: "50%",
+                }}
+              >
+                <span>Upload</span>
+              </div>
             </div>
+            {/* Hidden File Input */}
+            <input
+              type="file"
+              id="profile-file-input"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
 
             <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)" }}>{fullName}</h2>
             <span
@@ -269,14 +357,28 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="form-group" style={{ marginBottom: "24px" }}>
-                  <label className="form-label">Profile Photo URL</label>
-                  <input
-                    type="url"
-                    className="form-input"
-                    placeholder="https://example.com/photo.jpg"
-                    value={profilePhoto}
-                    onChange={(e) => setProfilePhoto(e.target.value)}
-                  />
+                  <label className="form-label" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>Profile Photo</span>
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 400 }}>Supports direct upload or image URL</span>
+                  </label>
+                  <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                    <button
+                      type="button"
+                      className="btn btn--secondary"
+                      onClick={() => document.getElementById("profile-file-input").click()}
+                      style={{ padding: "8px 16px", fontSize: "13px", height: "40px", flexShrink: 0 }}
+                    >
+                      Choose Image
+                    </button>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Or paste image URL here..."
+                      value={profilePhoto && profilePhoto.startsWith("data:image/") ? "[Uploaded Image]" : profilePhoto}
+                      onChange={(e) => setProfilePhoto(e.target.value)}
+                      style={{ flex: 1 }}
+                    />
+                  </div>
                 </div>
 
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>

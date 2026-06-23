@@ -8,6 +8,35 @@ const User = require("../models/User");
 const Employee = require("../models/Employee");
 const { sendTokenResponse } = require("../utils/tokenService");
 
+const cloudinary = require("cloudinary").v2;
+
+// Configure Cloudinary if environment variables are present
+if (process.env.CLOUDINARY_CLOUD_NAME) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
+
+// Helper to upload base64 image to Cloudinary with zero-config base64 fallback
+const uploadToCloudinary = async (base64Str) => {
+  if (!process.env.CLOUDINARY_CLOUD_NAME) {
+    console.log("Cloudinary is not configured. Saving photo as base64 data URL.");
+    return base64Str;
+  }
+  try {
+    const uploadResponse = await cloudinary.uploader.upload(base64Str, {
+      folder: "hrconnect_profiles",
+      resource_type: "image",
+    });
+    return uploadResponse.secure_url;
+  } catch (error) {
+    console.error("Cloudinary upload failed, falling back to base64:", error);
+    return base64Str;
+  }
+};
+
 // ── @desc    Register a new employee
 // ── @route   POST /api/auth/register
 // ── @access  Public
@@ -219,16 +248,29 @@ const updateProfile = async (req, res, next) => {
           user.name = fullName;
         }
         if (mobileNumber) emp.mobileNumber = mobileNumber;
-        if (profilePhoto !== undefined) emp.profilePhoto = profilePhoto;
+        if (profilePhoto !== undefined) {
+          if (profilePhoto && profilePhoto.startsWith("data:image/")) {
+            emp.profilePhoto = await uploadToCloudinary(profilePhoto);
+          } else {
+            emp.profilePhoto = profilePhoto;
+          }
+        }
         await emp.save();
         await user.save();
       }
     } else {
-      const { name } = req.body;
+      const { name, profilePhoto } = req.body;
       if (name) {
         user.name = name;
-        await user.save();
       }
+      if (profilePhoto !== undefined) {
+        if (profilePhoto && profilePhoto.startsWith("data:image/")) {
+          user.profilePhoto = await uploadToCloudinary(profilePhoto);
+        } else {
+          user.profilePhoto = profilePhoto;
+        }
+      }
+      await user.save();
     }
 
     // Return updated profile details

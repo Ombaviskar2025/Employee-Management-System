@@ -7,8 +7,9 @@
 import { useState, useEffect } from "react";
 import { FiX, FiUser, FiMail, FiPhone, FiBriefcase, FiCalendar, FiDollarSign, FiLock } from "react-icons/fi";
 import { validateEmployeeForm } from "../utils/validators";
+import api from "../services/api";
 
-const DEPARTMENTS = [
+const STATIC_DEPARTMENTS = [
   "Engineering", "IT", "HR", "Finance", "Marketing",
   "Sales", "Operations", "Legal", "Design", "Product",
   "Customer Support", "Management", "Other",
@@ -30,6 +31,25 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
 
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
+  const [departments, setDepartments] = useState([]);
+
+  // Fetch departments dynamically
+  useEffect(() => {
+    const fetchDepts = async () => {
+      try {
+        const response = await api.get("/departments");
+        if (response.data.success && response.data.data.length > 0) {
+          setDepartments(response.data.data.map(d => d.name));
+        } else {
+          setDepartments(STATIC_DEPARTMENTS);
+        }
+      } catch (err) {
+        console.error("Failed to load departments from database, using fallback:", err);
+        setDepartments(STATIC_DEPARTMENTS);
+      }
+    };
+    fetchDepts();
+  }, []);
 
   // Populate form when editing
   useEffect(() => {
@@ -170,7 +190,7 @@ const EmployeeModal = ({ employee, onSubmit, onClose, loading = false }) => {
                   onChange={handleChange}
                 >
                   <option value="">Select department...</option>
-                  {DEPARTMENTS.map((d) => (
+                   {departments.map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
                 </select>

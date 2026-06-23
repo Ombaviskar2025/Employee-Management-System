@@ -26,6 +26,7 @@ const documentRoutes = require("./routes/documentRoutes");
 const auditLogRoutes = require("./routes/auditLogRoutes");
 const payrollRoutes = require("./routes/payrollRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const departmentRoutes = require("./routes/departmentRoutes");
 const { errorHandler, notFound } = require("./middleware/errorHandler");
 
 // ── Connect to MongoDB ────────────────────────────────────────────────────────
@@ -116,6 +117,7 @@ app.use("/api/documents", documentRoutes);
 app.use("/api/audit-logs", auditLogRoutes);
 app.use("/api/payroll", payrollRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/departments", departmentRoutes);
 
 // ── 404 Handler ───────────────────────────────────────────────────────────────
 app.use(notFound);

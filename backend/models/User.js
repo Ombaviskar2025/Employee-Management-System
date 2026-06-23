@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema(
       enum: ["master_hr", "employee"],
       default: "employee",
     },
+    profilePhoto: {
+      type: String,
+      default: "",
+    },
     resetPasswordToken: {
       type: String,
       select: false,
