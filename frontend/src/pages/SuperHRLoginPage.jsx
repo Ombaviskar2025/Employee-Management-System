@@ -1,13 +1,13 @@
 /**
  * SuperHRLoginPage.jsx
  * Dedicated login page for Super HR Admins.
- * Premium Dark Purple & Violet theme with glassmorphism and subtle animations.
+ * Compact, premium Dark Purple & Violet theme matching the layout design.
  */
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft, FiShield } from "react-icons/fi";
+import { FiArrowLeft } from "react-icons/fi";
 import { loginUser, selectIsAuthenticated } from "../redux/slices/authSlice";
 import { validateLoginForm } from "../utils/validators";
 
@@ -50,137 +50,132 @@ const SuperHRLoginPage = () => {
   };
 
   return (
-    <div className="auth-page overflow-y-auto" style={{ background: "radial-gradient(circle at 50% 50%, #0d091e 0%, #05030a 100%)" }}>
-      {/* Premium Purple glowing blobs */}
-      <div className="auth-blob" style={{ background: "rgba(168, 85, 247, 0.15)", top: "10%", left: "10%", width: "400px", height: "400px", filter: "blur(120px)" }} />
-      <div className="auth-blob" style={{ background: "rgba(236, 72, 153, 0.12)", bottom: "10%", right: "10%", width: "450px", height: "450px", filter: "blur(130px)" }} />
+    <div className="min-h-screen flex flex-col justify-between overflow-y-auto relative" style={{ backgroundColor: "#06030a", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      {/* Dynamic Background Elements */}
+      <div className="mesh-blob bg-secondary-container top-[-10%] left-[-10%]" style={{ background: "rgba(168, 85, 247, 0.15)" }}></div>
+      <div className="mesh-blob bg-primary-container bottom-[-10%] right-[-10%]" style={{ background: "rgba(236, 72, 153, 0.12)", animationDelay: "-5s" }}></div>
+      <div className="mesh-blob bg-tertiary-container top-[30%] left-[30%]" style={{ width: "300px", height: "300px", opacity: 0.15 }}></div>
 
-      <div className="auth-card" style={{ borderColor: "rgba(168, 85, 247, 0.25)", boxShadow: "0 0 40px rgba(168, 85, 247, 0.1)" }}>
-        {/* Back Link */}
-        <Link 
-          to="/login" 
-          style={{ 
-            display: "inline-flex", 
-            alignItems: "center", 
-            gap: "6px", 
-            color: "rgba(255,255,255,0.5)", 
-            textDecoration: "none", 
-            fontSize: "13px", 
-            marginBottom: "20px",
-            transition: "color 0.2s"
-          }}
-          onMouseEnter={(e) => e.target.style.color = "#a855f7"}
-          onMouseLeave={(e) => e.target.style.color = "rgba(255,255,255,0.5)"}
-        >
-          <FiArrowLeft size={14} /> Back to Employee Portal
-        </Link>
-
-        {/* Logo */}
-        <div className="auth-logo">
-          <div className="auth-logo__icon" style={{ background: "linear-gradient(135deg, #a855f7 0%, #ec4899 100%)" }}>
-            <FiShield size={20} color="white" />
+      {/* Top Navigation */}
+      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-container-padding-mobile md:px-container-padding-desktop py-3 bg-surface/30 backdrop-blur-xl border-b border-white/10 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg shadow-purple-500/20" style={{ background: "linear-gradient(135deg, #a855f7 0%, #ec4899 100%)" }}>
+            <span className="material-symbols-outlined text-white text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
           </div>
-          <div>
-            <h1 className="auth-logo__title" style={{ background: "linear-gradient(to right, #ffffff, #d8b4fe)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>HR Connect</h1>
-            <p className="auth-logo__sub" style={{ color: "#c084fc", fontWeight: "600", letterSpacing: "1px" }}>SUPER HR PORTAL</p>
-          </div>
+          <span className="text-lg font-bold tracking-tight text-on-surface">HR Connect</span>
         </div>
+      </header>
 
-        <h2 className="auth-title" style={{ fontSize: "22px" }}>Administrative Access 🔐</h2>
-        <p className="auth-desc">Authenticate to manage employee records & settings</p>
-
-        <form onSubmit={handleSubmit} noValidate className="auth-form">
-          {/* Email */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="admin-email" style={{ color: "rgba(255, 255, 255, 0.8)" }}>
-              Admin Email Address
-            </label>
-            <div className="input-icon-wrap">
-              <FiMail className="input-icon" size={15} style={{ color: "#c084fc" }} />
-              <input
-                id="admin-email"
-                name="email"
-                type="email"
-                className={`form-input form-input--icon ${errors.email ? "form-input--error" : ""}`}
-                placeholder="admin@hrconnect.com"
-                value={form.email}
-                onChange={handleChange}
-                autoComplete="email"
-                autoFocus
-                style={{
-                  borderColor: "rgba(168, 85, 247, 0.2)",
-                  background: "rgba(13, 9, 30, 0.5)",
-                }}
-              />
-            </div>
-            {errors.email && (
-              <span className="form-error">{errors.email}</span>
-            )}
-          </div>
-
-          {/* Password */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="admin-password" style={{ color: "rgba(255, 255, 255, 0.8)" }}>
-              Security Key / Password
-            </label>
-            <div className="input-icon-wrap">
-              <FiLock className="input-icon" size={15} style={{ color: "#c084fc" }} />
-              <input
-                id="admin-password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                className={`form-input form-input--icon form-input--icon-r ${errors.password ? "form-input--error" : ""}`}
-                placeholder="••••••••"
-                value={form.password}
-                onChange={handleChange}
-                autoComplete="current-password"
-                style={{
-                  borderColor: "rgba(168, 85, 247, 0.2)",
-                  background: "rgba(13, 9, 30, 0.5)",
-                }}
-              />
-              <button
-                type="button"
-                className="input-icon-right"
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                style={{ color: "#c084fc" }}
-              >
-                {showPassword ? <FiEyeOff size={15} /> : <FiEye size={15} />}
-              </button>
-            </div>
-            {errors.password && (
-              <span className="form-error">{errors.password}</span>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn--primary btn--full btn--lg"
-            disabled={loading}
-            id="admin-submit-btn"
-            style={{ 
-              marginTop: "16px",
-              background: "linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%)",
-              boxShadow: "0 4px 15px rgba(168, 85, 247, 0.3)",
-              border: "none"
-            }}
+      {/* Main Container */}
+      <main className="relative z-10 flex-grow flex items-center justify-center px-container-padding-mobile pt-16 pb-4">
+        <div className="glass-card w-full max-w-[420px] p-6 md:p-8 rounded-xl flex flex-col gap-5 transition-all duration-500 hover:scale-[1.01]" style={{ borderColor: "rgba(168, 85, 247, 0.25)", boxShadow: "0 0 30px rgba(168, 85, 247, 0.05)" }}>
+          {/* Back to Employee Portal Link */}
+          <Link 
+            to="/login" 
+            className="inline-flex items-center gap-1.5 text-xs text-on-surface-variant/70 hover:text-purple-400 transition-colors font-semibold"
           >
-            {loading ? (
-              <>
-                <span className="btn-spinner" />
-                Authenticating HR...
-              </>
-            ) : (
-              "Access Admin Console"
-            )}
-          </button>
-        </form>
-        
-        <div style={{ textAlign: "center", marginTop: "24px", fontSize: "12px", color: "rgba(255,255,255,0.4)" }}>
-          🔒 Secure Administrative Zone · Unauthorized access is prohibited.
+            <FiArrowLeft size={14} /> Back to Employee Portal
+          </Link>
+
+          {/* Logo and Header */}
+          <div className="flex flex-col items-center text-center gap-1">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-2 shadow-xl shadow-purple-500/30 group" style={{ background: "linear-gradient(135deg, #a855f7 0%, #ec4899 100%)" }}>
+              <span className="material-symbols-outlined text-white text-xl group-hover:scale-110 transition-transform" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <h1 className="text-xl font-bold text-on-surface tracking-tight">Administrative Access</h1>
+              <span className="text-xl">🔐</span>
+            </div>
+            <p className="text-sm text-on-surface-variant max-w-[260px]">
+              Authenticate to manage employee records & settings
+            </p>
+          </div>
+
+          {/* Sign In Form */}
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+            {/* Email Field */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-outline uppercase tracking-widest pl-1 font-semibold" htmlFor="admin-email">Admin Email Address</label>
+              <div className={`input-glow flex items-center gap-2.5 px-4 py-2.5 bg-white/5 border ${errors.email ? "border-red-500" : "border-white/10"} rounded-full transition-all group`}>
+                <span className="material-symbols-outlined text-purple-400 text-lg group-focus-within:text-purple-300 transition-colors">mail</span>
+                <input
+                  id="admin-email"
+                  name="email"
+                  type="email"
+                  className="bg-transparent border-none p-0 w-full text-on-surface placeholder-on-surface-variant/40 focus:ring-0 text-sm"
+                  placeholder="admin@hrconnect.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              {errors.email && (
+                <span className="text-red-400 text-xs pl-4">{errors.email}</span>
+              )}
+            </div>
+
+            {/* Password Field */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-outline uppercase tracking-widest pl-1 font-semibold" htmlFor="admin-password">Security Key / Password</label>
+              <div className={`input-glow flex items-center gap-2.5 px-4 py-2.5 bg-white/5 border ${errors.password ? "border-red-500" : "border-white/10"} rounded-full transition-all group relative`}>
+                <span className="material-symbols-outlined text-purple-400 text-lg group-focus-within:text-purple-300 transition-colors">lock</span>
+                <input
+                  id="admin-password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="bg-transparent border-none p-0 w-full text-on-surface placeholder-on-surface-variant/40 focus:ring-0 text-sm"
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  className="absolute right-4 flex items-center text-on-surface-variant hover:text-on-surface transition-colors"
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    {showPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
+              </div>
+              {errors.password && (
+                <span className="text-red-400 text-xs pl-4">{errors.password}</span>
+              )}
+            </div>
+
+            {/* Primary Action */}
+            <button
+              className="w-full py-3.5 rounded-full text-base font-bold text-white shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all relative overflow-hidden group"
+              id="submitBtn"
+              type="submit"
+              disabled={loading}
+              style={{
+                background: "linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%)",
+                boxShadow: "0 4px 15px rgba(168, 85, 247, 0.3)"
+              }}
+            >
+              <span className={`relative z-10 ${loading ? "opacity-0" : ""}`} id="btnText">Access Admin Console</span>
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/10" id="btnLoader">
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                </div>
+              )}
+              <div className="shimmer absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </button>
+          </form>
+
+          <div style={{ textAlign: "center", marginTop: "12px", fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>
+            🔒 Secure Administrative Zone · Unauthorized access is prohibited.
+          </div>
         </div>
-      </div>
+      </main>
+
+      {/* Footer Shell */}
+      <footer className="w-full py-4 flex flex-col items-center gap-2 mt-auto relative z-10">
+        <p className="text-xs uppercase tracking-widest text-outline">HR CONNECT PORTAL</p>
+        <p className="text-xs text-on-surface-variant/60">© 2026 HR Connect Portal</p>
+      </footer>
     </div>
   );
 };
