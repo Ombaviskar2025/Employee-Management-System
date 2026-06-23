@@ -937,10 +937,10 @@ input, select, textarea { font-family: inherit; }
 .form-input {
   width: 100%;
   padding: 11px 14px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border) !important;
   border-radius: var(--radius-md);
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
   font-size: 14px;
   transition: var(--transition);
   -webkit-appearance: none;
